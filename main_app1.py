@@ -923,12 +923,7 @@ for idx, msg in enumerate(st.session_state.messages[1:-1]):  # chỉ đến mess
         render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
 
     # ✅ Phát audio nếu đây là message phần giới thiệu bài học (dự phòng nếu reload)
-    if (
-        absolute_idx in lesson_intro_indices
-        and st.session_state.get("read_lesson_first", False)
-        and st.session_state.get("enable_audio_playback", True)
-    ):
-        render_audio_block(msg["parts"][0]["text"], autoplay=True)
+    render_audio_block(msg["parts"][0]["text"], autoplay=True)
 
 
 # Ô nhập câu hỏi mới
