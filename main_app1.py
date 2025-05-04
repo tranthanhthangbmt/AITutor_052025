@@ -429,7 +429,10 @@ with st.sidebar:
                 st.session_state["selected_part_for_discussion"] = new_selection
                 st.session_state["force_ai_to_ask"] = True
 
-                #xử lý lỗi message chọn nội dung radio
+                st.session_state["selected_part_for_discussion"] = new_selection
+                st.session_state["force_ai_to_ask"] = True
+        
+                # Gửi message tới GPT ngay sau khi chọn
                 st.session_state.messages.append({
                     "role": "user",
                     "content": f"Bạn đã chọn: {new_selection['id']} – {new_selection.get('tieu_de', '')}"
@@ -894,14 +897,6 @@ if pdf_context:
     {pdf_context}
     --- END OF HANDBOOK CONTENT ---
     """
-
-def on_radio_change():
-    selected_value = radio_button_group.value
-    st.session_state.messages.append({"role": "user", "content": f"Bạn đã chọn: {selected_value}"})
-    st.session_state.should_generate_response = True
-    st.rerun()
-
-radio_button_group.on_change(on_radio_change)
 
 # Hiển thị lịch sử chat
 for idx, msg in enumerate(st.session_state.messages[1:]):
