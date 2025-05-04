@@ -904,7 +904,8 @@ if pdf_context:
 # Hiển thị lịch sử chat
 for idx, msg in enumerate(st.session_state.messages[1:]):
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
-    st.chat_message(role).write(msg["parts"][0]["text"])
+    #st.chat_message(role).write(msg["parts"][0]["text"])
+    st.chat_message(role).write(msg["content"])
 
     # ✅ Greeting ban đầu
     if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
