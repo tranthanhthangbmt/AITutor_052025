@@ -174,17 +174,19 @@ available_lessons = load_available_lessons_from_txt(LESSON_LIST_URL)
 def format_pdf_text_for_display(raw_text: str) -> str:
     text = raw_text.strip()
 
-    # ✅ Tách các gạch đầu dòng và đảm bảo xuống dòng trước mỗi "• "
-    text = re.sub(r"\s*[•\-–●🔹🔷]+\s*", r"\n• ", text)
-    text = re.sub(r"\s*o\s+", r"\n• ", text)
+    # 🔧 1. Loại bỏ ký tự lỗi thường gặp
+    text = text.replace("�", "").replace("•", "\n•").replace("  ", " ")
 
-    # ✅ Đảm bảo mọi "• " đều bắt đầu dòng mới (phòng trường hợp bị liền sau nội dung)
-    text = re.sub(r"(?<!\n)• ", r"\n• ", text)
+    # 🔧 2. Sửa lỗi OCR phổ biến "ch •" → "cho "
+    text = re.sub(r"\bch\s*•", "cho ", text)
 
-    # ✅ Xuống dòng sau dấu chấm nếu sau đó là chữ hoa (giữa 2 câu)
+    # 🔧 3. Tách các đầu dòng "o", "-", "•"
+    text = re.sub(r"[\s]*[o\-–●🔹🔷]+[\s]+", r"\n• ", text)
+
+    # 🔧 4. Tách câu sau dấu chấm nếu theo sau là chữ cái viết hoa
     text = re.sub(r"(?<=[a-z0-9])\. (?=[A-Z])", ".\n", text)
 
-    # ✅ Làm nổi bật các tiêu đề lý thuyết
+    # 🔧 5. Làm nổi bật các nhóm tiêu đề
     heading_keywords = [
         "Định lý", "Ví dụ", "Lưu ý", "Ghi chú", "Nhận xét",
         "Hệ quả", "Bổ đề", "Tóm tắt", "Ứng dụng", "Phân tích",
@@ -196,20 +198,14 @@ def format_pdf_text_for_display(raw_text: str) -> str:
             r"\n\n**\1**", text
         )
 
-    # ✅ Làm nổi bật tiêu đề phần
+    # 🔧 6. Đưa các mục "PHẦN" hoặc "Bài" lên dạng tiêu đề markdown
     text = re.sub(r"(PHẦN\s*\d+[:：])", r"\n\n### \1", text, flags=re.IGNORECASE)
+    text = re.sub(r"(Bài\s*\d+[:：])", r"\n\n**\1**", text, flags=re.IGNORECASE)
 
-    # ✅ Làm rõ biểu tượng emoji nếu có
-    text = re.sub(r"(?:(🧮|🔍|🧠|📌|📐|💡|✅|➡|🎯|📜|📊|💻|🔢))", r"\n\n\1", text)
-
-    # ✅ Biểu tượng toán học
+    # 🔧 7. Làm rõ ký hiệu toán học
     text = text.replace("=>", "⇒").replace("<=", "⇐")
 
-    # ✅ Đánh dấu khối mã Python nếu có
-    if "def " in text or "import " in text:
-        text = re.sub(r"(?s)(?:(def .+?:\n(?: {4}.+\n)+))", r"\n```\n\1\n```\n", text)
-
-    # ✅ Gộp dòng trống
+    # 🔧 8. Gộp và làm gọn dòng trắng
     text = re.sub(r"\n{3,}", "\n\n", text)
 
     return text.strip()
@@ -969,8 +965,10 @@ previous_msg = None
 for idx, msg in enumerate(st.session_state.messages[1:]):  
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
     #st.chat_message(role).write(msg["parts"][0]["text"])
-    text = format_pdf_text_for_display(msg["parts"][0]["text"])
-    st.chat_message(role).markdown(text)
+    # text = format_pdf_text_for_display(msg["parts"][0]["text"])
+    # st.chat_message(role).markdown(text)
+    formatted_text = format_pdf_text_for_display(msg["parts"][0]["text"])
+    st.chat_message(role).markdown(formatted_text)
 
     absolute_idx = idx + 1  # do đã bỏ messages[0]
     is_last = idx == len(st.session_state.messages[1:]) - 1
