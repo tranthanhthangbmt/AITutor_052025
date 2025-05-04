@@ -73,7 +73,70 @@ def parse_pdf_file(file_path):
 
     return results
 
+#tự động nhận diện loại nội dung:
+def tach_noi_dung_bai_hoc_tong_quat(file_path):
+    doc = fitz.open(file_path)
+    toc = doc.get_toc()
 
+    pages_text = [page.get_text("text") for page in doc]
+    results = []
+
+    # Phân loại phần
+    def classify_section(title):
+        title_upper = title.upper()
+        if "PHẦN 1:" in title_upper:
+            return 'ly_thuyet'
+        elif "PHẦN 2:" in title_upper:
+            return 'bai_tap_co_giai'
+        elif "PHẦN 3:" in title_upper:
+            return 'trac_nghiem'
+        elif "PHẦN 4:" in title_upper:
+            return 'luyen_tap'
+        elif "PHẦN 5:" in title_upper:
+            return 'du_an'
+        else:
+            return None  # Không thay đổi nếu không phải tiêu đề phần chính
+
+    current_section = None
+
+    def make_id(loai, stt):
+        prefix = {
+            'ly_thuyet': 'LYTHUYET',
+            'bai_tap_co_giai': 'BAITAPCOGIAI',
+            'trac_nghiem': 'TRACNGHIEM',
+            'luyen_tap': 'LUYENTAP',
+            'du_an': 'DUAN',
+            'khac': 'KHAC'
+        }.get(loai, 'KHAC')
+        return f"{prefix}_{stt}"
+
+    def clean_text(text):
+        import re
+        text = re.sub(r'Page \d+ of \d+', '', text)
+        return text.strip()
+
+    for idx, (level, title, page_num) in enumerate(toc):
+        page_idx = page_num - 1
+        start_text = pages_text[page_idx]
+        
+        extracted_text = start_text  # Tạm thời, để tránh lỗi
+        
+        new_section = classify_section(title)
+        if new_section:
+            current_section = new_section
+
+        loai = current_section if current_section else 'khac'
+        id_ = make_id(loai, idx + 1)
+
+        results.append({
+            'id': id_,
+            'loai': loai,
+            'tieu_de': title.strip(),
+            'noi_dung': clean_text(extracted_text)
+        })
+
+    return results
+    
 def parse_docx_file(file_path):
     """
     Tách nội dung file Word .docx thành các phần học theo tiêu đề.
