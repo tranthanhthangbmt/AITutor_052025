@@ -949,7 +949,7 @@ for idx, msg in enumerate(st.session_state.messages[1:-1]):
     #     render_audio_block(msg["parts"][0]["text"], autoplay=False)
 
     # ✅ Các message khác (có thể hiển thị nếu cần)
-    elif role == "🧑‍🎓 Học sinh":
+    if role == "🧑‍🎓 Học sinh":
         st.chat_message(role).write(msg["parts"][0]["text"])
 
 # 👉 Hiển thị message cuối cùng
