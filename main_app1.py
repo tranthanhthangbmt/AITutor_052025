@@ -922,18 +922,21 @@ lesson_intro_indices = st.session_state.get("lesson_intro_indices", [])
 
 for idx, msg in enumerate(st.session_state.messages[1:-1]):  
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
-    
-    if role == "🤖 Gia sư AI":
-        # ✅ Greeting đầu tiên
-        if idx == 0 and st.session_state.get("enable_audio_playback", True):
-           st.chat_message(role).write(msg["parts"][0]["text"])
-           render_audio_block(msg["parts"][0]["text"], autoplay=False)
-           
+    absolute_idx = idx + 1  # do đã bỏ message[0]
 
-        # ✅ Trích dẫn bài học nếu bật đọc nội dung
-        if lesson_intro_indices or st.session_state.get("read_lesson_first", True):
-            st.chat_message(role).write(msg["parts"][0]["text"])
-            render_audio_block(msg["parts"][0]["text"], autoplay=False)
+    # ✅ Greeting đầu tiên của Gia sư AI
+    if role == "🤖 Gia sư AI" and idx == 0 and st.session_state.get("enable_audio_playback", True):
+        st.chat_message(role).write(msg["parts"][0]["text"])
+        render_audio_block(msg["parts"][0]["text"], autoplay=False)
+
+    # ✅ Trích dẫn bài học nếu là message được đánh dấu và chế độ đọc bài học được bật
+    elif role == "🤖 Gia sư AI" and absolute_idx in lesson_intro_indices and st.session_state.get("read_lesson_first", True):
+        st.chat_message(role).write(msg["parts"][0]["text"])
+        render_audio_block(msg["parts"][0]["text"], autoplay=False)
+
+    # ✅ Các message khác (có thể hiển thị nếu cần)
+    elif role == "🧑‍🎓 Học sinh":
+        st.chat_message(role).write(msg["parts"][0]["text"])
 
 # 👉 Hiển thị message cuối cùng
 msg = st.session_state.messages[-1]
