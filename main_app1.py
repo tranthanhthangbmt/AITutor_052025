@@ -648,28 +648,29 @@ if all_parts:
     
     st.session_state["toc_html"] = toc_html  # lưu để dùng phía dưới
 
-    # 2. Hiển thị bảng mục lục
-    st.markdown("### 📚 **Mục lục bài học**")
+    # 2. Hiển thị bảng mục lục (mục lục trên messages)
+    #st.markdown("### 📚 **Mục lục bài học**")
+    
     df = pd.DataFrame(parts_sorted)
     #st.dataframe(df[["id", "loai", "tieu_de"]]) #đang ẩn để dùng nút content
 
     # 3. Lưu session để dùng tiếp
     st.session_state["lesson_parts"] = parts_sorted
 
-    # 📌 Chọn phần học từ danh sách Content
-    with st.expander("🎯 Chọn mục để bắt đầu từ Content", expanded=False):
-        lesson_part_titles = [f"{part['id']} – {part['tieu_de']} ({part['loai']})" for part in st.session_state["lesson_parts"]]
-        selected_idx = st.selectbox("🔍 Chọn phần học để AI đặt câu hỏi:", list(range(len(lesson_part_titles))), format_func=lambda i: lesson_part_titles[i])
+    # 📌 Chọn phần học từ danh sách Content (mục lục trên messages)
+    # with st.expander("🎯 Chọn mục để bắt đầu từ Content", expanded=False):
+    #     lesson_part_titles = [f"{part['id']} – {part['tieu_de']} ({part['loai']})" for part in st.session_state["lesson_parts"]]
+    #     selected_idx = st.selectbox("🔍 Chọn phần học để AI đặt câu hỏi:", list(range(len(lesson_part_titles))), format_func=lambda i: lesson_part_titles[i])
     
-        if st.button("🚀 Bắt đầu mục này"):
-            selected_part = st.session_state["lesson_parts"][selected_idx]
-            st.session_state["selected_part_for_discussion"] = selected_part
-            st.session_state["force_ai_to_ask"] = True
-            #st.rerun()
+    #     if st.button("🚀 Bắt đầu mục này"):
+    #         selected_part = st.session_state["lesson_parts"][selected_idx]
+    #         st.session_state["selected_part_for_discussion"] = selected_part
+    #         st.session_state["force_ai_to_ask"] = True
+    #         #st.rerun()
 
-            # Chỉ giữ lại prompt hệ thống để tránh lặp lại phần chào hỏi
-            if st.session_state.messages:
-                st.session_state.messages = [st.session_state.messages[0]]
+    #         # Chỉ giữ lại prompt hệ thống để tránh lặp lại phần chào hỏi
+    #         if st.session_state.messages:
+    #             st.session_state.messages = [st.session_state.messages[0]]
 
     # 👉 Nếu người dùng chọn một phần → sinh câu hỏi kiểm tra
     if (
