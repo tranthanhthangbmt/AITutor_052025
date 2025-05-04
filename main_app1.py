@@ -715,7 +715,7 @@ if all_parts:
         selected_part = st.session_state["selected_part_for_discussion"]
         question_prompt = f"""
         Dựa trên mục học có tiêu đề: "{selected_part['tieu_de']}", hãy đặt một câu hỏi kiểm tra hiểu biết ngắn gọn, rõ ràng cho học sinh, theo phong cách đã thiết lập trong buổi học.
-        
+        Nếu phần nội dung này là các câu hỏi trắc nghiệm thì trích dẫn câu trắc nghiệm được chọn đó hoặc nếu là nhiều câu hỏi trắc nghiệm nhưng tiêu đề chung không phải 1 câu thì lần lượt hiển thị câu hỏi trắc nghiệm.
         Chỉ sử dụng thông tin có trong nội dung sau:
         ---
         {selected_part['noi_dung']}
