@@ -393,6 +393,8 @@ with st.sidebar:
     
     show_content = st.sidebar.checkbox("📑 Mục lục bài học", value=False)
     #doc_reading_enabled = st.checkbox("✅ Đọc nội dung bài học trước khi đọc câu hỏi", value=False)
+    # Hiển thị checkbox cho người dùng
+    read_lesson_first = st.checkbox("Đọc nội dung bài học", value=True)
     
     #with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
     if show_content:
@@ -694,8 +696,6 @@ if all_parts:
     # 2. Hiển thị bảng mục lục (mục lục trên messages)
     #st.markdown("### 📚 **Mục lục bài học**")
 
-    # Hiển thị checkbox cho người dùng
-    read_lesson_first = st.checkbox("Đọc nội dung bài học trước khi đọc câu hỏi", value=True)
     
     df = pd.DataFrame(parts_sorted)
     #st.dataframe(df[["id", "loai", "tieu_de"]]) #đang ẩn để dùng nút content
