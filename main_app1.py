@@ -960,6 +960,9 @@ st.chat_message(role).write(msg["parts"][0]["text"])
 if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
     render_audio_block(msg["parts"][0]["text"], autoplay=False)
 
+# Ô nhập câu hỏi mới
+user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
+
 if user_input:
     # 1. Hiển thị câu trả lời học sinh
     st.chat_message("🧑‍🎓 Học sinh").write(user_input)
