@@ -865,9 +865,9 @@ if pdf_context:
         st.session_state.lesson_loaded = current_source  # đánh dấu đã load
 
         #xuất ra dạng audio
-        if st.session_state.get("enable_audio_playback", True):
-            greeting_audio_b64 = generate_and_encode_audio(greeting)
-            st.session_state["greeting_audio_b64"] = greeting_audio_b64
+        # if st.session_state.get("enable_audio_playback", True):
+        #     greeting_audio_b64 = generate_and_encode_audio(greeting)
+        #     st.session_state["greeting_audio_b64"] = greeting_audio_b64
         
     #Phần chọn bài học
     lesson_title = selected_lesson if selected_lesson != "👉 Chọn bài học..." else "Bài học tùy chỉnh"
