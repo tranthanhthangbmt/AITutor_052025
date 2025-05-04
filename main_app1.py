@@ -397,36 +397,32 @@ with st.sidebar:
         #st.markdown("🧠 **Chọn một mục bên dưới để bắt đầu:**", unsafe_allow_html=True)
     
         lesson_parts = st.session_state.get("lesson_parts", [])
-        options = []
-        option_labels = []
-    
+        options = ["__none__"]  # option mặc định
+        option_labels = ["-- Chọn mục để bắt đầu --"]
+        
         for idx, part in enumerate(lesson_parts):
             part_id = part["id"]
             tieu_de = part.get("tieu_de", "Không có tiêu đề")
             progress_item = next((p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {})
             trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
-    
+        
             label = f"✅ {part_id} – {tieu_de}" if trang_thai == "hoan_thanh" else f"{part_id} – {tieu_de}"
             options.append(f"{part_id}|{idx}")
             option_labels.append(label)
-            
-        selected_index = None
-        if "selected_part_for_discussion" in st.session_state:
-            selected = st.session_state["selected_part_for_discussion"]
-            selected_index = options.index(f'{selected["id"]}|{lesson_parts.index(selected)}')
         
+        # Dùng radio như bình thường
         selected_raw = st.radio(
             "Chọn mục để học:",
             options=options,
             format_func=lambda x: option_labels[options.index(x)],
-            key="selected_part_radio"  # 👈 dùng key để Streamlit nhớ lựa chọn
+            key="selected_part_radio"
         )
         
-        # Cập nhật vào session_state nếu có thay đổi
-        if selected_raw:
+        # Bỏ qua nếu chưa chọn
+        if selected_raw != "__none__":
             part_id, idx = selected_raw.split("|")
             new_selection = lesson_parts[int(idx)]
-            
+        
             # So sánh tránh cập nhật dư thừa
             current = st.session_state.get("selected_part_for_discussion", {})
             if current.get("id") != part_id:
