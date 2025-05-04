@@ -614,6 +614,9 @@ if "messages" not in st.session_state:
         {"role": "model", "parts": [{"text": "Chào bạn! Mình là gia sư AI 🎓\n\nHãy chọn bài học hoặc nhập link tài liệu bên sidebar để mình bắt đầu chuẩn bị nội dung buổi học nhé!"}]}
     ]
 
+if "should_generate_response" not in st.session_state:
+    st.session_state.should_generate_response = False
+
 import tempfile
 import requests
 
