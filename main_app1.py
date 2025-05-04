@@ -925,7 +925,7 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     if (role == "🤖 Gia sư AI") and (st.session_state.get("enable_audio_playback", True)):
         if is_last:            
             render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
-        elseif (read_lesson_first==True): # 👉 Sau đó phát audio của câu trả lời AI            
+        else if (read_lesson_first==True): # 👉 Sau đó phát audio của câu trả lời AI            
             render_audio_block(msg["parts"][0]["text"], autoplay=True)
 
 # Ô nhập câu hỏi mới
