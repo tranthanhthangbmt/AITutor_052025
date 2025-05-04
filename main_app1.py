@@ -172,21 +172,49 @@ available_lessons = load_available_lessons_from_txt(LESSON_LIST_URL)
 
 #viết cho đẹp hơn
 def format_pdf_text_for_display(raw_text: str) -> str:
-    # Tách câu hoặc dòng bằng các gạch đầu dòng thường gặp
-    text = re.sub(r"(?<=\s)[•o\-](?=\s)", "\n•", raw_text)
+    text = raw_text.strip()
 
-    # Xuống dòng sau mỗi dấu chấm kết thúc câu (nếu chưa có)
+    # ✅ Tách các bullet → xuống dòng với ký hiệu đẹp
+    text = re.sub(r"\s*[•\-–●🔹🔷]+\s*", r"\n• ", text)
+    text = re.sub(r"\s*o\s+", r"\n• ", text)
+
+    # ✅ Xuống dòng sau dấu chấm nếu sau đó là chữ hoa
     text = re.sub(r"(?<=[a-z0-9])\. (?=[A-Z])", ".\n", text)
 
-    # Làm nổi bật các từ khóa
-    keywords = ["Định lý", "Ví dụ", "Lưu ý", "Nhận xét", "Hệ quả", "Giải thích"]
-    for kw in keywords:
-        text = re.sub(f"({kw})", r"**\1**", text)
+    # ✅ Làm nổi bật các nhóm tiêu đề lý thuyết
+    heading_keywords = [
+        "Định lý", "Ví dụ", "Lưu ý", "Ghi chú", "Nhận xét",
+        "Hệ quả", "Bổ đề", "Tóm tắt", "Ứng dụng", "Phân tích",
+        "Bài toán", "Thuật toán", "Ý nghĩa", "Kết luận", "Mô hình hóa"
+    ]
+    for kw in heading_keywords:
+        text = re.sub(
+            rf"(?<!\*)\b({kw}(?: [0-9]+)?(?: \([^)]+\))?:?)",
+            r"\n\n**\1**", text
+        )
 
-    # Loại bỏ dòng trắng thừa
-    text = re.sub(r"\n{2,}", "\n\n", text.strip())
+    # ✅ Làm nổi bật tiêu đề phần
+    text = re.sub(r"(PHẦN\s*\d+[:：])", r"\n\n### \1", text, flags=re.IGNORECASE)
 
-    return text
+    # ✅ Làm nổi bật emoji biểu tượng nếu có
+    text = re.sub(r"(?:(🧮|🔍|🧠|📌|📐|💡|✅|➡|🎯|📜|📊|💻|🔢))", r"\n\n\1", text)
+
+    # ✅ Ký hiệu toán học → biểu tượng rõ ràng
+    text = text.replace("=>", "⇒").replace("<=", "⇐")
+
+    # ✅ Giữ đoạn mã Python nguyên vẹn
+    code_blocks = re.findall(r"(?s)(```python.*?```)", text)
+    for block in code_blocks:
+        text = text.replace(block, "\n\n" + block + "\n\n")
+
+    # ✅ Đánh dấu các khối mã thường (không có dấu ``` ban đầu)
+    if "def " in text or "import " in text:
+        text = re.sub(r"(?s)(?:(def .+?:\n(?: {4}.+\n)+))", r"\n```\n\1\n```\n", text)
+
+    # ✅ Gộp các dòng trắng
+    text = re.sub(r"\n{3,}", "\n\n", text)
+
+    return text.strip()
     
 # Xác thực API bằng request test
 def is_valid_gemini_key(key):
