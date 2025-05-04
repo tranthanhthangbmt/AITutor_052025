@@ -919,16 +919,18 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     absolute_idx = idx + 1  # do đã bỏ messages[0]
     is_last = idx == len(st.session_state.messages[1:]) - 1
 
+    # ✅ Greeting ban đầu — ưu tiên dùng audio có sẵn nếu có
+    if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
+        greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
+        render_audio_block(greeting_text, autoplay=True)
+
     # ✅ Nếu là Gia sư AI và bật audio
     if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
-        if idx == 0 and "greeting_audio_b64" in st.session_state:
-            # 👉 Dùng audio greeting có sẵn nếu được tạo trước (ưu tiên)
-            render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
-        elif is_last and previous_msg:
-            # 👉 Ghép phát message trước nếu là message cuối
+        if is_last and previous_msg:
+            # 👉 Ghép phát message trước nếu là cuối
             render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
         elif st.session_state.get("read_lesson_first", False):
-            # 👉 Phát các đoạn AI ở giữa nếu bật chế độ đọc
+            # 👉 Phát các đoạn AI ở giữa nếu bật đọc bài học
             render_audio_block(msg["parts"][0]["text"], autoplay=True)
 
     previous_msg = msg
