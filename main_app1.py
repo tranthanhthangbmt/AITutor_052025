@@ -910,10 +910,9 @@ if pdf_context:
     """
 
 # Hiển thị lịch sử chat
-previous_msg = None
 lesson_intro_indices = st.session_state.get("lesson_intro_indices", [])
 
-for idx, msg in enumerate(st.session_state.messages[1:]):
+for idx, msg in enumerate(st.session_state.messages[1:-1]):  # chỉ đến message kế cuối
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
     st.chat_message(role).write(msg["parts"][0]["text"])
 
@@ -930,13 +929,6 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
         and st.session_state.get("enable_audio_playback", True)
     ):
         render_audio_block(msg["parts"][0]["text"], autoplay=True)
-
-    # ✅ Phát audio nếu là câu trả lời cuối từ AI
-    is_last = idx == len(st.session_state.messages[1:]) - 1
-    if is_last and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
-        render_audio_block(msg["parts"][0]["text"], autoplay=True)
-
-    previous_msg = msg
 
 
 # Ô nhập câu hỏi mới
