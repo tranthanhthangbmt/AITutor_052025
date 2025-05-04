@@ -38,12 +38,6 @@ import json
 # Giao diện Streamlit
 st.set_page_config(page_title="Tutor AI", page_icon="🎓")
 
-# Trước đoạn if này, thêm:
-if "sidebar_state" not in st.session_state:
-    st.session_state.sidebar_state = "expanded"
-
-sidebar_state = st.session_state.sidebar_state
-
 if "toc_html" not in st.session_state:
     st.session_state["toc_html"] = "<p><em>Chưa có mục lục bài học.</em></p>"
 
@@ -150,7 +144,7 @@ key_from_local = st_javascript("JSON.parse(window.localStorage.getItem('gemini_a
 if not input_key and key_from_local:
     st.session_state["GEMINI_API_KEY"] = key_from_local
     input_key = key_from_local
-    
+
 @st.cache_data
 def load_available_lessons_from_txt(url):
     try:
@@ -434,16 +428,6 @@ with st.sidebar:
             if current.get("id") != part_id:
                 st.session_state["selected_part_for_discussion"] = new_selection
                 st.session_state["force_ai_to_ask"] = True
-
-                st.session_state["selected_part_for_discussion"] = new_selection
-                st.session_state["force_ai_to_ask"] = True
-        
-                # Gửi message tới GPT ngay sau khi chọn
-                st.session_state.messages.append({
-                    "role": "user",
-                    "content": f"Bạn đã chọn: {new_selection['id']} – {new_selection.get('tieu_de', '')}"
-                })
-                st.session_state.should_generate_response = True
     
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
@@ -619,9 +603,6 @@ if "messages" not in st.session_state:
         {"role": "user", "parts": [{"text": SYSTEM_PROMPT_Tutor_AI}]},
         {"role": "model", "parts": [{"text": "Chào bạn! Mình là gia sư AI 🎓\n\nHãy chọn bài học hoặc nhập link tài liệu bên sidebar để mình bắt đầu chuẩn bị nội dung buổi học nhé!"}]}
     ]
-
-if "should_generate_response" not in st.session_state:
-    st.session_state.should_generate_response = False
 
 import tempfile
 import requests
@@ -910,13 +891,7 @@ if pdf_context:
 # Hiển thị lịch sử chat
 for idx, msg in enumerate(st.session_state.messages[1:]):
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
-    #st.chat_message(role).write(msg["parts"][0]["text"])
-    #st.chat_message(role).write(msg["content"])
-    content = msg.get("content")
-    if content:
-        st.chat_message(role).write(content)
-    else:
-        st.warning("Không có nội dung tin nhắn để hiển thị.")
+    st.chat_message(role).write(msg["parts"][0]["text"])
 
     # ✅ Greeting ban đầu
     if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
@@ -926,12 +901,6 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     is_last = idx == len(st.session_state.messages[1:]) - 1
     if is_last and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
         render_audio_block(msg["parts"][0]["text"], autoplay=True)
-
-    if st.session_state.should_generate_response:
-        with st.spinner("Đang phản hồi..."):
-            reply = chat_with_gemini(st.session_state.messages)
-            st.session_state.messages.append({"role": "assistant", "content": reply})
-        st.session_state.should_generate_response = False
 
 # Ô nhập câu hỏi mới
 user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
