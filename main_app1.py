@@ -38,19 +38,6 @@ import json
 # Giao diện Streamlit
 st.set_page_config(page_title="Tutor AI", page_icon="🎓")
 
-st.markdown(
-    """
-    <style>
-    .main {
-        max-width: 700px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
 if "toc_html" not in st.session_state:
     st.session_state["toc_html"] = "<p><em>Chưa có mục lục bài học.</em></p>"
 
@@ -391,31 +378,41 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
-        st.write("🧠 Chọn một mục bên dưới để bắt đầu:")
+        st.markdown("🧠 **Chọn một mục bên dưới để bắt đầu:**", unsafe_allow_html=True)
     
-        for idx, part in enumerate(st.session_state.get("lesson_parts", [])):
-            part_id = part["id"]
-            tieu_de = part.get("tieu_de", "Không có tiêu đề")
-            progress_item = next((p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {})
-            trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
+        selected_id = None  # Để lưu mục được chọn
     
-            # Giao diện nút
-            button_label = f"{part_id} – {tieu_de}"
-            if trang_thai == "hoan_thanh":
-                button_label = f"✅ {button_label}"
+        # Bắt đầu form để tạo nút "submit" riêng biệt
+        with st.form("select_part_form"):
+            for idx, part in enumerate(st.session_state.get("lesson_parts", [])):
+                part_id = part["id"]
+                tieu_de = part.get("tieu_de", "Không có tiêu đề")
+                progress_item = next((p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {})
+                trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
     
-            button_key = f"sidebar_btn_{part_id}_{idx}"
-            button_class = "completed-btn" if trang_thai == "hoan_thanh" else "incomplete-btn"
+                # Label và trạng thái
+                label = f"✅ {part_id} – {tieu_de}" if trang_thai == "hoan_thanh" else f"{part_id} – {tieu_de}"
+                value = f"{part_id}|{idx}"  # Gộp thành giá trị duy nhất
     
-            # Bao nút trong container có class phù hợp
-            with st.container():
-                st.markdown(f'<div class="{button_class}">', unsafe_allow_html=True)
-                if st.button(button_label, key=button_key):
-                    st.session_state["selected_part_for_discussion"] = part
+                # Dùng radio hoặc selectbox dạng nút
+                st.markdown(
+                    f"""
+                    <input type="radio" name="selected_part" value="{value}" id="{value}" style="margin-bottom: 2px;">
+                    <label for="{value}">{label}</label><br>
+                    """, unsafe_allow_html=True
+                )
+    
+            # Nút submit chọn mục
+            submitted = st.form_submit_button("🔽 Chọn mục")
+            if submitted:
+                selected_raw = st.query_params.get("selected_part", None)
+                if selected_raw:
+                    part_id, idx = selected_raw.split("|")
+                    # Lưu vào session_state nếu cần xử lý
+                    st.session_state["selected_part_for_discussion"] = st.session_state["lesson_parts"][int(idx)]
                     st.session_state["force_ai_to_ask"] = True
                     if st.session_state.messages:
                         st.session_state.messages = [st.session_state.messages[0]]
-                st.markdown("</div>", unsafe_allow_html=True)
     
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
