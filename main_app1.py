@@ -428,6 +428,13 @@ with st.sidebar:
             if current.get("id") != part_id:
                 st.session_state["selected_part_for_discussion"] = new_selection
                 st.session_state["force_ai_to_ask"] = True
+
+                #xử lý lỗi message chọn nội dung radio
+                st.session_state.messages.append({
+                    "role": "user",
+                    "content": f"Bạn đã chọn: {new_selection['id']} – {new_selection.get('tieu_de', '')}"
+                })
+                st.session_state.should_generate_response = True
     
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
@@ -888,6 +895,14 @@ if pdf_context:
     --- END OF HANDBOOK CONTENT ---
     """
 
+def on_radio_change():
+    selected_value = radio_button_group.value
+    st.session_state.messages.append({"role": "user", "content": f"Bạn đã chọn: {selected_value}"})
+    st.session_state.should_generate_response = True
+    st.rerun()
+
+radio_button_group.on_change(on_radio_change)
+
 # Hiển thị lịch sử chat
 for idx, msg in enumerate(st.session_state.messages[1:]):
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
@@ -901,6 +916,12 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     is_last = idx == len(st.session_state.messages[1:]) - 1
     if is_last and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
         render_audio_block(msg["parts"][0]["text"], autoplay=True)
+
+    if st.session_state.should_generate_response:
+        with st.spinner("Đang phản hồi..."):
+            response = get_gpt_response(st.session_state.messages)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+        st.session_state.should_generate_response = False
 
 # Ô nhập câu hỏi mới
 user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
