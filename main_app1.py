@@ -739,6 +739,9 @@ if all_parts:
                 "parts": [{"text": question_prompt}]
             })
 
+            # 🔊 Phát audio tự động nội dung vừa thêm
+            play_audio(question_prompt)
+
             #thêm chức năng đọc nội dung bài học
             #if doc_reading_enabled:
                 #noi_dung_trich_dan = selected_part['noi_dung']
