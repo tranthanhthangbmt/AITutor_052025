@@ -135,6 +135,26 @@ if "user_id" not in st.session_state:
 #mở lại danh sách các bài học
 st.session_state["show_sidebar_inputs"] = True
 
+#thiết lập font size
+st.markdown("""
+<style>
+    .element-container .markdown-text-container {
+        font-size: 17px;
+        line-height: 1.7;
+    }
+    code {
+        background-color: #f4f4f4;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 15px;
+    }
+    h3 {
+        color: #2a73cc;
+        margin-top: 1.5em;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 uploaded_files = []  # ✅ đảm bảo biến tồn tại trong mọi trường hợp
 
 input_key = st.session_state.get("GEMINI_API_KEY", "")
@@ -174,23 +194,28 @@ available_lessons = load_available_lessons_from_txt(LESSON_LIST_URL)
 def format_pdf_text_for_display(raw_text: str) -> str:
     text = raw_text.strip()
 
-    # 🔧 1. Loại bỏ ký tự lỗi thường gặp
-    text = text.replace("�", "").replace("•", "\n•").replace("  ", " ")
-
-    # 🔧 2. Sửa lỗi OCR phổ biến "ch •" → "cho "
+    # ✅ 1. Xử lý ký tự lỗi & lỗi tách từ
+    text = text.replace("�", "")
     text = re.sub(r"\bch\s*•", "cho ", text)
+    text = re.sub(r"\bsa\s*•", "sao ", text)
+    text = re.sub(r"\bthe\s*•", "theo ", text)
+    text = re.sub(r"\bD\s*•", "Do ", text)
+    text = re.sub(r"\bch\s+", "cho ", text)
+    text = re.sub(r"\bTạ\s*", "Tạo ", text)
 
-    # 🔧 3. Tách các đầu dòng "o", "-", "•"
-    text = re.sub(r"[\s]*[o\-–●🔹🔷]+[\s]+", r"\n• ", text)
+    # ✅ 2. Chuẩn hóa gạch đầu dòng → xuống dòng
+    text = re.sub(r"\s*[•\-–●🔹🔷]+\s*", r"\n• ", text)
+    text = re.sub(r"(?<!\n)• ", r"\n• ", text)
 
-    # 🔧 4. Tách câu sau dấu chấm nếu theo sau là chữ cái viết hoa
+    # ✅ 3. Tách câu sau dấu chấm nếu sau đó là chữ hoa
     text = re.sub(r"(?<=[a-z0-9])\. (?=[A-Z])", ".\n", text)
 
-    # 🔧 5. Làm nổi bật các nhóm tiêu đề
+    # ✅ 4. Làm nổi bật nhóm tiêu đề bằng **Markdown**
     heading_keywords = [
         "Định lý", "Ví dụ", "Lưu ý", "Ghi chú", "Nhận xét",
         "Hệ quả", "Bổ đề", "Tóm tắt", "Ứng dụng", "Phân tích",
-        "Bài toán", "Thuật toán", "Ý nghĩa", "Kết luận", "Mô hình hóa"
+        "Bài toán", "Thuật toán", "Ý nghĩa", "Kết luận", "Mô hình hóa",
+        "Giải thích", "Phân tích chi tiết", "Định nghĩa", "Lời giải"
     ]
     for kw in heading_keywords:
         text = re.sub(
@@ -198,14 +223,23 @@ def format_pdf_text_for_display(raw_text: str) -> str:
             r"\n\n**\1**", text
         )
 
-    # 🔧 6. Đưa các mục "PHẦN" hoặc "Bài" lên dạng tiêu đề markdown
-    text = re.sub(r"(PHẦN\s*\d+[:：])", r"\n\n### \1", text, flags=re.IGNORECASE)
-    text = re.sub(r"(Bài\s*\d+[:：])", r"\n\n**\1**", text, flags=re.IGNORECASE)
+    # ✅ 5. Đưa PHẦN và Bài thành tiêu đề h3
+    text = re.sub(r"\b(PHẦN\s*\d+[:：])", r"\n\n### \1", text, flags=re.IGNORECASE)
+    text = re.sub(r"\b(Bài\s*\d+[:：])", r"\n\n**\1**", text, flags=re.IGNORECASE)
 
-    # 🔧 7. Làm rõ ký hiệu toán học
-    text = text.replace("=>", "⇒").replace("<=", "⇐")
+    # ✅ 6. Làm rõ toán học
+    text = text.replace("=>", "⇒").replace("<=", "⇐").replace("=", " = ")
 
-    # 🔧 8. Gộp và làm gọn dòng trắng
+    # ✅ 7. Format đoạn code: phát hiện lệnh Python → thêm ```python ```
+    if "import " in text or "def " in text:
+        text = re.sub(
+            r"(import .+?)(?=\n\S|\Z)", r"\n```python\n\1\n```\n", text, flags=re.DOTALL
+        )
+        text = re.sub(
+            r"(def .+?)(?=\n\S|\Z)", r"\n```python\n\1\n```\n", text, flags=re.DOTALL
+        )
+
+    # ✅ 8. Gộp dòng trắng thừa
     text = re.sub(r"\n{3,}", "\n\n", text)
 
     return text.strip()
