@@ -437,11 +437,11 @@ with st.sidebar:
         st.session_state["firebase_enabled"] = True
 
     #đọc bài học
-    if doc_reading_enabled:
-        #audio_text = trich_dan_tu_pdf(ten_muc_duoc_chon)  # bạn đã có đoạn trích trong nội dung trước
-        audio_text = selected_part['noi_dung']
-        play_audio(audio_text)  # dùng hàm TTS sẵn có
-        time.sleep(len(audio_text) * 0.2)  # tuỳ chỉnh delay theo thời lượng
+    # if doc_reading_enabled:
+    #     #audio_text = trich_dan_tu_pdf(ten_muc_duoc_chon)  # bạn đã có đoạn trích trong nội dung trước
+    #     audio_text = selected_part['noi_dung']
+    #     play_audio(audio_text)  # dùng hàm TTS sẵn có
+    #     time.sleep(len(audio_text) * 0.2)  # tuỳ chỉnh delay theo thời lượng
         
     #Lưu tiến độ học ra file JSON
     if st.button("💾 Lưu tiến độ học"):
