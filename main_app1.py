@@ -170,6 +170,24 @@ def load_available_lessons_from_txt(url):
 LESSON_LIST_URL = "https://raw.githubusercontent.com/tranthanhthangbmt/AITutor_Gemini/main/Data/DiscreteMathematicsLesson3B.txt"  
 available_lessons = load_available_lessons_from_txt(LESSON_LIST_URL) 
 
+#viết cho đẹp hơn
+def format_pdf_text_for_display(raw_text: str) -> str:
+    # Tách câu hoặc dòng bằng các gạch đầu dòng thường gặp
+    text = re.sub(r"(?<=\s)[•o\-](?=\s)", "\n•", raw_text)
+
+    # Xuống dòng sau mỗi dấu chấm kết thúc câu (nếu chưa có)
+    text = re.sub(r"(?<=[a-z0-9])\. (?=[A-Z])", ".\n", text)
+
+    # Làm nổi bật các từ khóa
+    keywords = ["Định lý", "Ví dụ", "Lưu ý", "Nhận xét", "Hệ quả", "Giải thích"]
+    for kw in keywords:
+        text = re.sub(f"({kw})", r"**\1**", text)
+
+    # Loại bỏ dòng trắng thừa
+    text = re.sub(r"\n{2,}", "\n\n", text.strip())
+
+    return text
+    
 # Xác thực API bằng request test
 def is_valid_gemini_key(key):
     try:
@@ -924,7 +942,9 @@ previous_msg = None
 
 for idx, msg in enumerate(st.session_state.messages[1:]):  
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
-    st.chat_message(role).write(msg["parts"][0]["text"])
+    #st.chat_message(role).write(msg["parts"][0]["text"])
+    text = format_pdf_text_for_display(msg["parts"][0]["text"])
+    st.chat_message(role).markdown(text)
 
     absolute_idx = idx + 1  # do đã bỏ messages[0]
     is_last = idx == len(st.session_state.messages[1:]) - 1
