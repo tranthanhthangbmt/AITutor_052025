@@ -742,7 +742,7 @@ if all_parts:
                 "role": "user",
                 "parts": [{"text": question_prompt}]
             }
-            st.session_state.messages.append(question_prompt)
+            st.session_state.messages.append(user_message)
         
             # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
             # 🏷️ Đánh dấu index
