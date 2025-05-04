@@ -910,9 +910,7 @@ if pdf_context:
     """
 
 # Hiển thị lịch sử chat
-lesson_intro_indices = st.session_state.get("lesson_intro_indices", [])
-
-for idx, msg in enumerate(st.session_state.messages[1:-1]):  # chỉ đến message kế cuối
+for idx, msg in enumerate(st.session_state.messages[1:]):  
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
     st.chat_message(role).write(msg["parts"][0]["text"])
 
@@ -922,8 +920,12 @@ for idx, msg in enumerate(st.session_state.messages[1:-1]):  # chỉ đến mess
     if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
         render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
 
-    # ✅ Phát audio nếu đây là message phần giới thiệu bài học (dự phòng nếu reload)
-    render_audio_block(msg["parts"][0]["text"], autoplay=True)
+    # ✅ Phát audio nếu là Gia sư AI và bật audio
+    if (
+        role == "🤖 Gia sư AI"
+        and st.session_state.get("enable_audio_playback", True)
+    ):
+        render_audio_block(msg["parts"][0]["text"], autoplay=True)
 
 
 # Ô nhập câu hỏi mới
