@@ -531,9 +531,10 @@ def load_system_prompt_from_file(filepath):
 # 🔹 Vai trò mặc định của Tutor AI (trước khi có tài liệu)
 #SYSTEM_PROMPT_Tutor_AI = ""
 try:
-    SYSTEM_PROMPT_Tutor_AI = load_system_prompt_from_file("system_prompt_tutor_ai.txt")
+    prompt_path = os.path.join("Data", "system_prompt_tutor_ai.txt")
+    SYSTEM_PROMPT_Tutor_AI = load_system_prompt_from_file(prompt_path)
 except FileNotFoundError:
-    st.error("❌ Không tìm thấy file system_prompt_tutor_ai.txt")
+    st.error("❌ Không tìm thấy file Data/system_prompt_tutor_ai.txt")
     st.stop()
 
 # Gọi API Gemini, gửi cả lịch sử trò chuyện
