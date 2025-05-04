@@ -738,44 +738,31 @@ if all_parts:
         #st.code(question_prompt, language="markdown")  # để debug prompt
         
         with st.spinner("🤖 Đang tạo câu hỏi từ phần bạn chọn..."):
-            #ai_question = chat_with_gemini([{"role": "user", "parts": [{"text": question_prompt}]}])
             st.session_state.messages.append({
                 "role": "user",
-                "parts": [{"text": question_prompt}]
+                "parts": [{"text": question_prompt}],
+                "is_lesson_intro": True  # 🏷️ cờ hiệu mới
             })
 
-            # 🔊 Phát audio tự động nội dung vừa thêm            
-            # Nếu người dùng chọn checkbox và có nội dung để đọc
-            if read_lesson_first and question_prompt:
-                b64 = None
-                if st.session_state.get("enable_audio_playback", True):
-                    b64 = generate_and_encode_audio(question_prompt)
+            # # 🔊 Phát audio tự động nội dung vừa thêm            
+            # # Nếu người dùng chọn checkbox và có nội dung để đọc
+            # if read_lesson_first and question_prompt:
+            #     b64 = None
+            #     if st.session_state.get("enable_audio_playback", True):
+            #         b64 = generate_and_encode_audio(question_prompt)
                 
-                # Hiển thị audio player
-                if b64:
-                    autoplay_attr = "autoplay" if st.session_state.get("enable_audio_playback", True) else ""
-                    st.markdown(f"""
-                    <audio controls {autoplay_attr}>
-                        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-                        Trình duyệt của bạn không hỗ trợ phát âm thanh.
-                    </audio>
-                    """, unsafe_allow_html=True)
-
-            #thêm chức năng đọc nội dung bài học
-            #
-                #noi_dung_trich_dan = selected_part['noi_dung']
-                #audio_path = text_to_audio(noi_dung_trich_dan, "audio_trich_dan.mp3")
-                #st.audio(audio_path)
-                #greeting_audio_b64 = generate_and_encode_audio(selected_part['noi_dung'])
+            #     # Hiển thị audio player
+            #     if b64:
+            #         autoplay_attr = "autoplay" if st.session_state.get("enable_audio_playback", True) else ""
+            #         st.markdown(f"""
+            #         <audio controls {autoplay_attr}>
+            #             <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+            #             Trình duyệt của bạn không hỗ trợ phát âm thanh.
+            #         </audio>
+            #         """, unsafe_allow_html=True)
 
             #Bước 2: Gợi ý cách viết prompt tốt (ngắn + rõ)
             selected_part = st.session_state["selected_part_for_discussion"]
-
-            #question_prompt = f"""
-            #Dựa trên mục học có tiêu đề: "{selected_part['tieu_de']}", hãy đặt một câu hỏi kiểm tra hiểu biết ngắn gọn, rõ ràng cho học sinh, theo phong cách đã thiết lập trong buổi học.
-            #
-            #Chỉ sử dụng thông tin có trong handout. Không được đưa ví dụ hay kiến thức ngoài tài liệu.
-            #"""
 
             #Bước 3: Hiển thị câu hỏi AI phản hồi
             ai_question = chat_with_gemini(st.session_state.messages)
@@ -788,17 +775,6 @@ if all_parts:
                 #ai_question = format_mcq_options(ai_question)
                 #st.chat_message("🤖 Gia sư AI").markdown(ai_question)
                 st.session_state.messages.append({"role": "model", "parts": [{"text": ai_question}]})
-
-                # #👉 PHÁT ÂM THANH CHO CÂU HỎI            
-                # if st.session_state.get("enable_audio_playback", True):
-                #     b64 = generate_and_encode_audio(ai_question)
-                #     autoplay_attr = "autoplay"
-                #     st.markdown(f"""
-                #     <audio controls {autoplay_attr}>
-                #         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-                #         Trình duyệt của bạn không hỗ trợ phát âm thanh.
-                #     </audio>
-                #     """, unsafe_allow_html=True)
         
     # ✅ Nếu vừa khôi phục tiến độ, thông báo ra
     if st.session_state.get("progress_restored"):
@@ -903,11 +879,6 @@ if pdf_context:
         ]
         st.session_state.lesson_source = current_source
         st.session_state.lesson_loaded = current_source  # đánh dấu đã load
-
-        #xuất ra dạng audio
-        # if st.session_state.get("enable_audio_playback", True):
-        #     greeting_audio_b64 = generate_and_encode_audio(greeting)
-        #     st.session_state["greeting_audio_b64"] = greeting_audio_b64
         
     #Phần chọn bài học
     lesson_title = selected_lesson if selected_lesson != "👉 Chọn bài học..." else "Bài học tùy chỉnh"
@@ -932,6 +903,15 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     # ✅ Greeting ban đầu
     if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
         render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
+
+    # ✅ Nếu là phần bài học vừa được chọn và muốn phát
+    if (
+        msg.get("is_lesson_intro")  # 🏷️ kiểm tra cờ hiệu
+        and role == "🧑‍🎓 Học sinh"
+        and st.session_state.get("read_lesson_first")
+        and st.session_state.get("enable_audio_playback", True)
+    ):
+    render_audio_block(msg["parts"][0]["text"], autoplay=True) 
 
     # ✅ Nếu là câu cuối cùng từ AI → phát audio
     is_last = idx == len(st.session_state.messages[1:]) - 1
