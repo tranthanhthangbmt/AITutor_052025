@@ -926,7 +926,7 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
         is_last = idx == len(st.session_state.messages[1:]) - 1
 
-        if is_last and previous_msg:
+        if is_last:
             # 👉 Phát message trước nếu là cuối cùng (câu hỏi AI)
             render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
         elif st.session_state.get("read_lesson_first", False):
