@@ -38,6 +38,19 @@ import json
 # Giao diện Streamlit
 st.set_page_config(page_title="Tutor AI", page_icon="🎓")
 
+st.markdown(
+    """
+    <style>
+    .main {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 if "toc_html" not in st.session_state:
     st.session_state["toc_html"] = "<p><em>Chưa có mục lục bài học.</em></p>"
 
