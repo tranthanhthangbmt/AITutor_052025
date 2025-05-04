@@ -43,6 +43,23 @@ def play_audio(text, voice="vi-VN-HoaiMyNeural"):
             </audio>
         """
         st.markdown(audio_html, unsafe_allow_html=True)
+        # Chèn JS để chỉ phát audio cuối cùng
+        js_code = """
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const audios = document.querySelectorAll("audio");
+            audios.forEach((audio, index) => {
+                if (index !== audios.length - 1) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                } else {
+                    audio.play();
+                }
+            });
+        });
+        </script>
+        """
+        st.markdown(js_code, unsafe_allow_html=True)
 
 
 def generate_and_encode_audio(text, voice="vi-VN-HoaiMyNeural"):
