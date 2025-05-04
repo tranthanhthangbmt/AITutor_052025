@@ -99,6 +99,8 @@ from modules.text_utils import (
     convert_parentheses_to_latex
 )
 
+from modules.firebase_config import init_firestore  # 🛠 Đừng quên dòng này nữa nếu dùng Firestore
+
 #from dashboard import show_progress_dashboard, show_part_detail_table
 
 #for data firebase
