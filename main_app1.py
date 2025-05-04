@@ -50,7 +50,8 @@ from modules.content_parser import (
     classify_section,
     parse_pdf_file,
     parse_docx_file,
-    parse_uploaded_file
+    parse_uploaded_file,
+	tach_noi_dung_bai_hoc_tong_quat
 )
 
 from modules.session_manager import (
@@ -624,7 +625,7 @@ if uploaded_files:
                 tmpfile.write(file_bytes)
                 tmpfile_path = tmpfile.name
     
-            parts = parse_pdf_file(tmpfile_path)
+            parts = tach_noi_dung_bai_hoc_tong_quat(tmpfile_path) #parse_pdf_file(tmpfile_path)
             all_parts.extend(parts)
     
         else:
@@ -641,7 +642,7 @@ elif selected_lesson != "👉 Chọn bài học..." and default_link.strip():
             tmpfile.write(response.content)
             tmpfile_path = tmpfile.name
         try:
-            parts = parse_pdf_file(tmpfile_path)
+            parts = tach_noi_dung_bai_hoc_tong_quat(tmpfile_path) #parse_pdf_file(tmpfile_path)
             all_parts.extend(parts)
         finally:
             if os.path.exists(tmpfile_path):
