@@ -351,8 +351,32 @@ with st.sidebar:
         for f in uploaded_files:
             st.markdown(f"- {f.name}")
 
-    #with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
-    #    st.markdown(st.session_state["toc_html"], unsafe_allow_html=True)
+    # ✅ CSS để giảm khoảng cách giữa các nút trong sidebar
+    st.markdown("""
+        <style>
+        /* Loại bỏ khoảng cách giữa các nút trong sidebar */
+        div[data-testid="stSidebar"] div[data-testid="stButton"] {
+            margin-bottom: 2px;
+        }
+    
+        /* Tùy chỉnh nút hoàn thành */
+        .completed-btn > button {
+            background-color: #d4edda !important;
+            color: black !important;
+            width: 100%;
+            text-align: left;
+        }
+    
+        /* Tùy chỉnh nút chưa hoàn thành */
+        .incomplete-btn > button {
+            background-color: #f8f9fa !important;
+            color: black !important;
+            width: 100%;
+            text-align: left;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
         st.write("🧠 Chọn một mục bên dưới để bắt đầu:")
     
@@ -362,41 +386,26 @@ with st.sidebar:
             progress_item = next((p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {})
             trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
     
-            # ✅ Chọn màu cho nút dựa theo trạng thái
+            # Giao diện nút
             button_label = f"{part_id} – {tieu_de}"
             if trang_thai == "hoan_thanh":
                 button_label = f"✅ {button_label}"
     
-            # ✅ Key luôn duy nhất nhờ thêm index
-            button_id = f"sidebar_btn_{part_id}_{idx}"
-            completed = (trang_thai == "hoan_thanh")
-            button_style = f"""
-                <style>
-                    div[data-testid="stButton"]#{button_id} > button {{
-                        background-color: {'#d4edda' if completed else '#f8f9fa'};
-                        color: black;
-                        width: 100%;
-                        text-align: left;
-                    }}
-                </style>
-            """
-            st.markdown(button_style, unsafe_allow_html=True)
+            button_key = f"sidebar_btn_{part_id}_{idx}"
+            button_class = "completed-btn" if trang_thai == "hoan_thanh" else "incomplete-btn"
     
-            if st.button(button_label, key=button_id):
-                st.session_state["selected_part_for_discussion"] = part
-                st.session_state["force_ai_to_ask"] = True
-                if st.session_state.messages:
-                    st.session_state.messages = [st.session_state.messages[0]]
-    
-                # Đọc hành vi click
-                if st.session_state.get("part_click") == part_id:
+            # Bao nút trong container có class phù hợp
+            with st.container():
+                st.markdown(f'<div class="{button_class}">', unsafe_allow_html=True)
+                if st.button(button_label, key=button_key):
                     st.session_state["selected_part_for_discussion"] = part
                     st.session_state["force_ai_to_ask"] = True
                     if st.session_state.messages:
                         st.session_state.messages = [st.session_state.messages[0]]
+                st.markdown("</div>", unsafe_allow_html=True)
     
-    #st.session_state["firebase_enabled"] = st.checkbox("💾 Lưu dữ liệu lên Firebase", value=st.session_state["firebase_enabled"])
-    st.session_state["firebase_enabled"] = True
+        # Kích hoạt Firebase mặc định
+        st.session_state["firebase_enabled"] = True
     
     #Lưu tiến độ học ra file JSON
     if st.button("💾 Lưu tiến độ học"):
