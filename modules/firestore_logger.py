@@ -1,4 +1,5 @@
-from firebase_config import init_firestore
+#from firebase_config import init_firestore
+from modules.firebase_config import init_firestore
 from google.cloud.firestore_v1 import ArrayUnion
 import datetime
 import streamlit as st
