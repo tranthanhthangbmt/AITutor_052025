@@ -174,14 +174,17 @@ available_lessons = load_available_lessons_from_txt(LESSON_LIST_URL)
 def format_pdf_text_for_display(raw_text: str) -> str:
     text = raw_text.strip()
 
-    # ✅ Tách các bullet → xuống dòng với ký hiệu đẹp
+    # ✅ Tách các gạch đầu dòng và đảm bảo xuống dòng trước mỗi "• "
     text = re.sub(r"\s*[•\-–●🔹🔷]+\s*", r"\n• ", text)
     text = re.sub(r"\s*o\s+", r"\n• ", text)
 
-    # ✅ Xuống dòng sau dấu chấm nếu sau đó là chữ hoa
+    # ✅ Đảm bảo mọi "• " đều bắt đầu dòng mới (phòng trường hợp bị liền sau nội dung)
+    text = re.sub(r"(?<!\n)• ", r"\n• ", text)
+
+    # ✅ Xuống dòng sau dấu chấm nếu sau đó là chữ hoa (giữa 2 câu)
     text = re.sub(r"(?<=[a-z0-9])\. (?=[A-Z])", ".\n", text)
 
-    # ✅ Làm nổi bật các nhóm tiêu đề lý thuyết
+    # ✅ Làm nổi bật các tiêu đề lý thuyết
     heading_keywords = [
         "Định lý", "Ví dụ", "Lưu ý", "Ghi chú", "Nhận xét",
         "Hệ quả", "Bổ đề", "Tóm tắt", "Ứng dụng", "Phân tích",
@@ -196,22 +199,17 @@ def format_pdf_text_for_display(raw_text: str) -> str:
     # ✅ Làm nổi bật tiêu đề phần
     text = re.sub(r"(PHẦN\s*\d+[:：])", r"\n\n### \1", text, flags=re.IGNORECASE)
 
-    # ✅ Làm nổi bật emoji biểu tượng nếu có
+    # ✅ Làm rõ biểu tượng emoji nếu có
     text = re.sub(r"(?:(🧮|🔍|🧠|📌|📐|💡|✅|➡|🎯|📜|📊|💻|🔢))", r"\n\n\1", text)
 
-    # ✅ Ký hiệu toán học → biểu tượng rõ ràng
+    # ✅ Biểu tượng toán học
     text = text.replace("=>", "⇒").replace("<=", "⇐")
 
-    # ✅ Giữ đoạn mã Python nguyên vẹn
-    code_blocks = re.findall(r"(?s)(```python.*?```)", text)
-    for block in code_blocks:
-        text = text.replace(block, "\n\n" + block + "\n\n")
-
-    # ✅ Đánh dấu các khối mã thường (không có dấu ``` ban đầu)
+    # ✅ Đánh dấu khối mã Python nếu có
     if "def " in text or "import " in text:
         text = re.sub(r"(?s)(?:(def .+?:\n(?: {4}.+\n)+))", r"\n```\n\1\n```\n", text)
 
-    # ✅ Gộp các dòng trắng
+    # ✅ Gộp dòng trống
     text = re.sub(r"\n{3,}", "\n\n", text)
 
     return text.strip()
