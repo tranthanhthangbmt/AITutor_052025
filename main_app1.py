@@ -727,16 +727,9 @@ if all_parts:
                 st.chat_message("🤖 Gia sư AI").markdown(ai_question)
                 st.session_state.messages.append({"role": "model", "parts": [{"text": ai_question}]})
 
-                #👉 PHÁT ÂM THANH CHO CÂU HỎI
+                #👉 PHÁT ÂM THANH CHO CÂU HỎI            
                 if st.session_state.get("enable_audio_playback", True):
                     b64 = generate_and_encode_audio(ai_question)
-                    autoplay_attr = "autoplay"
-                    st.markdown(f"""
-                    <audio controls {autoplay_attr}>
-                        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-                        Trình duyệt của bạn không hỗ trợ phát âm thanh.
-                    </audio>
-                    """, unsafe_allow_html=True)
         
     # ✅ Nếu vừa khôi phục tiến độ, thông báo ra
     if st.session_state.get("progress_restored"):
