@@ -741,16 +741,17 @@ if all_parts:
         #st.subheader("🧪 Nội dung gửi lên Gemini:")
         #st.code(question_prompt, language="markdown")  # để debug prompt
 
-        if read_lesson_first:
-            with st.spinner("🤖 Đang tạo câu hỏi từ phần bạn chọn..."):
-                user_message = {
-                    "role": "user",
-                    "parts": [{"text": question_prompt}]
-                }
-                user_messageFilter = {
-                    "role": "user",
-                    "parts": [{"text": question_promptFilter}]
-                }
+        
+        with st.spinner("🤖 Đang tạo câu hỏi từ phần bạn chọn..."):
+            user_message = {
+                "role": "user",
+                "parts": [{"text": question_prompt}]
+            }
+            user_messageFilter = {
+                "role": "user",
+                "parts": [{"text": question_promptFilter}]
+            }
+            if read_lesson_first:
                 st.session_state.messages.append(user_messageFilter)
             
                 # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
