@@ -27,7 +27,7 @@ import os
 
 from firebase_admin import firestore  # ✨ Thêm dòng này ở đầu file chính
 
-db = init_firestore()
+
 
 from datetime import datetime
 from google.cloud.firestore_v1 import ArrayUnion
@@ -99,6 +99,8 @@ from modules.text_utils import (
 )
 
 from modules.firebase_config import init_firestore  # 🛠 Đừng quên dòng này nữa nếu dùng Firestore
+#khởi tạo db
+db = init_firestore()
 
 #from dashboard import show_progress_dashboard, show_part_detail_table
 
