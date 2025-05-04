@@ -1017,19 +1017,19 @@ if user_input:
         )
         
         #b64 = generate_and_encode_audio(reply)
-        b64 = None
-        if st.session_state.get("enable_audio_playback", True):
-            b64 = generate_and_encode_audio(reply)
+        # b64 = None
+        # if st.session_state.get("enable_audio_playback", True):
+        #     b64 = generate_and_encode_audio(reply)
         
-        # Hiển thị nút nghe
-        if b64:
-            autoplay_attr = "autoplay" if st.session_state.get("enable_audio_playback", True) else ""
-            st.markdown(f"""
-            <audio controls {autoplay_attr}>
-                <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-                Trình duyệt của bạn không hỗ trợ phát âm thanh.
-            </audio>
-            """, unsafe_allow_html=True)
+        # # Hiển thị nút nghe
+        # if b64:
+        #     autoplay_attr = "autoplay" if st.session_state.get("enable_audio_playback", True) else ""
+        #     st.markdown(f"""
+        #     <audio controls {autoplay_attr}>
+        #         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+        #         Trình duyệt của bạn không hỗ trợ phát âm thanh.
+        #     </audio>
+        #     """, unsafe_allow_html=True)
 
     # Chuyển biểu thức toán trong ngoặc đơn => LaTeX inline
     #reply = convert_parentheses_to_latex(reply)
