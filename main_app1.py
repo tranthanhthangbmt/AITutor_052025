@@ -905,7 +905,12 @@ if pdf_context:
 for idx, msg in enumerate(st.session_state.messages[1:]):
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
     #st.chat_message(role).write(msg["parts"][0]["text"])
-    st.chat_message(role).write(msg["content"])
+    #st.chat_message(role).write(msg["content"])
+    content = msg.get("content")
+    if content:
+        st.chat_message(role).write(content)
+    else:
+        st.warning("Không có nội dung tin nhắn để hiển thị.")
 
     # ✅ Greeting ban đầu
     if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
