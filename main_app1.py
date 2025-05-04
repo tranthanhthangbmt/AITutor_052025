@@ -569,7 +569,7 @@ with st.sidebar:
                 )
 
                 # Đăng ký font hỗ trợ Unicode
-                pdfmetrics.registerFont(TTFont("DejaVu", "fonts/DejaVuSans.ttf"))
+                pdfmetrics.registerFont(TTFont("DejaVu", "Data/fonts/DejaVuSans.ttf"))
         
                 # ✅ Tạo file PDF tạm
                 with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_pdf:
