@@ -389,7 +389,8 @@ with st.sidebar:
         </style>
     """, unsafe_allow_html=True)
     
-    show_content = st.sidebar.checkbox("📑 Content – Mục lục bài học", value=False)
+    show_content = st.sidebar.checkbox("📑 Mục lục bài học", value=False)
+    doc_reading_enabled = st.checkbox("✅ Đọc nội dung bài học trước khi đọc câu hỏi", value=False)
     
     #with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
     if show_content:
@@ -434,7 +435,13 @@ with st.sidebar:
     
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
-    
+
+    #đọc bài học
+    if doc_reading_enabled:
+        audio_text = trich_dan_tu_pdf(ten_muc_duoc_chon)  # bạn đã có đoạn trích trong nội dung trước
+        play_audio(audio_text)  # dùng hàm TTS sẵn có
+        time.sleep(len(audio_text) * 0.2)  # tuỳ chỉnh delay theo thời lượng
+        
     #Lưu tiến độ học ra file JSON
     if st.button("💾 Lưu tiến độ học"):
         save_lesson_progress()
