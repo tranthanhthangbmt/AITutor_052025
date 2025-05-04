@@ -406,7 +406,7 @@ with st.sidebar:
             option_labels.append(label)
     
         selected_index = None
-    	if "selected_part_for_discussion" in st.session_state:
+        if "selected_part_for_discussion" in st.session_state:
     	    selected = st.session_state["selected_part_for_discussion"]
     	    try:
     	        selected_index = options.index(f'{selected["id"]}|{lesson_parts.index(selected)}')
