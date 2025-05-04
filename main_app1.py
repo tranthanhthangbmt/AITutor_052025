@@ -733,6 +733,10 @@ if all_parts:
         {selected_part['noi_dung']}
         ---
         """
+
+        ccccccc = f"""        
+        {selected_part['noi_dung']}
+        """
         
         #st.subheader("🧪 Nội dung gửi lên Gemini:")
         #st.code(question_prompt, language="markdown")  # để debug prompt
@@ -742,7 +746,11 @@ if all_parts:
                 "role": "user",
                 "parts": [{"text": question_prompt}]
             }
-            st.session_state.messages.append(user_message)
+            user_messageFilter = {
+                "role": "user",
+                "parts": [{"text": question_promptFilter}]
+            }
+            st.session_state.messages.append(user_messageFilter)
         
             # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
             if "lesson_intro_indices" not in st.session_state:
