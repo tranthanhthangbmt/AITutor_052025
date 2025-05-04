@@ -723,8 +723,8 @@ if all_parts:
                 st.warning("⚠️ Gemini đang quá tải hoặc phản hồi lỗi. Vui lòng thử lại sau.")
             else:
                 ai_question = clean_html_to_text(ai_question)
-                ai_question = format_mcq_options(ai_question)
-                st.chat_message("🤖 Gia sư AI").markdown(ai_question)
+                #ai_question = format_mcq_options(ai_question)
+                #st.chat_message("🤖 Gia sư AI").markdown(ai_question)
                 st.session_state.messages.append({"role": "model", "parts": [{"text": ai_question}]})
 
                 #👉 PHÁT ÂM THANH CHO CÂU HỎI            
