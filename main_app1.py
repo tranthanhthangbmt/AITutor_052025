@@ -734,7 +734,7 @@ if all_parts:
         ---
         """
 
-        ccccccc = f"""        
+        question_promptFilter = f"""        
         {selected_part['noi_dung']}
         """
         
