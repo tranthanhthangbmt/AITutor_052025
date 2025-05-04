@@ -738,11 +738,16 @@ if all_parts:
         #st.code(question_prompt, language="markdown")  # để debug prompt
         
         with st.spinner("🤖 Đang tạo câu hỏi từ phần bạn chọn..."):
-            st.session_state.messages.append({
+            user_message = {
                 "role": "user",
-                "parts": [{"text": question_prompt}],
-                "is_lesson_intro": True  # 🏷️ cờ hiệu mới
-            })
+                "parts": [{"text": question_prompt}]
+            }
+            st.session_state.messages.append(user_message)
+        
+            # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
+            if "lesson_intro_indices" not in st.session_state:
+                st.session_state["lesson_intro_indices"] = []
+            st.session_state["lesson_intro_indices"].append(len(st.session_state.messages) - 1)
 
             # # 🔊 Phát audio tự động nội dung vừa thêm            
             # # Nếu người dùng chọn checkbox và có nội dung để đọc
@@ -896,7 +901,7 @@ if pdf_context:
     """
 
 # Hiển thị lịch sử chat
-previous_msg = None  # Để giữ lại message trước
+previous_msg = None
 
 for idx, msg in enumerate(st.session_state.messages[1:]):
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
@@ -909,18 +914,20 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     # ✅ Nếu là message cuối cùng từ AI → phát audio
     is_last = idx == len(st.session_state.messages[1:]) - 1
     if is_last and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
-        # 👉 Nếu message trước là phần bài học cần phát
+        lesson_intro_indices = st.session_state.get("lesson_intro_indices", [])
+
+        # 👉 Nếu message trước là phần giới thiệu bài học
         if (
             previous_msg
-            and previous_msg.get("is_lesson_intro")
+            and (idx in [i - 1 for i in lesson_intro_indices])  # vì đã bỏ messages[0]
             and st.session_state.get("read_lesson_first")
         ):
             render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
 
-        # 👉 Sau đó phát audio của câu trả lời AI
+        # 👉 Sau đó phát audio câu trả lời AI
         render_audio_block(msg["parts"][0]["text"], autoplay=True)
 
-    previous_msg = msg  # Cập nhật message trước
+    previous_msg = msg
 
 
 # Ô nhập câu hỏi mới
