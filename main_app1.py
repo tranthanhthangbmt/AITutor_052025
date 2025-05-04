@@ -406,10 +406,20 @@ with st.sidebar:
             option_labels.append(label)
     
         #selected_raw = st.radio("Chọn một mục:", options=options, format_func=lambda x: option_labels[options.index(x)], index=0 if "selected_part_for_discussion" not in st.session_state else options.index(f'{st.session_state["selected_part_for_discussion"]["id"]}|{lesson_parts.index(st.session_state["selected_part_for_discussion"])}'))
-        selected_index = None
+        selected_raw = None
+        options = [f"{part['id']}|{idx}" for idx, part in enumerate(lesson_parts)]
+        option_labels = [f"Phần {idx+1}: {part['title']}" for idx, part in enumerate(lesson_parts)]
+        
+        # Tìm chỉ số nếu có trạng thái trước đó
         if "selected_part_for_discussion" in st.session_state:
             selected = st.session_state["selected_part_for_discussion"]
-            selected_index = options.index(f'{selected["id"]}|{lesson_parts.index(selected)}')
+            try:
+                selected_value = f"{selected['id']}|{lesson_parts.index(selected)}"
+                selected_index = options.index(selected_value)
+            except ValueError:
+                selected_index = 0
+        else:
+            selected_index = 0
         
         selected_raw = st.radio(
             "Chọn một mục:",
@@ -417,13 +427,11 @@ with st.sidebar:
             format_func=lambda x: option_labels[options.index(x)],
             index=selected_index
         )
-    
+        
         if selected_raw:
             part_id, idx = selected_raw.split("|")
             st.session_state["selected_part_for_discussion"] = lesson_parts[int(idx)]
             st.session_state["force_ai_to_ask"] = True
-            #if st.session_state.get("messages"):
-            #    st.session_state["messages"] = [st.session_state["messages"][0]]
     
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
