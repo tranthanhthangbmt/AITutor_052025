@@ -743,9 +743,7 @@ if all_parts:
 
             # 🔊 Phát audio tự động nội dung vừa thêm
             if doc_reading_enabled:
-                b64 = None
-                if st.session_state.get("enable_audio_playback", True):
-                    b64 = generate_and_encode_audio(question_prompt)
+                b64 = generate_and_encode_audio(question_prompt)
                 
                 # Hiển thị nút nghe
                 if b64:
