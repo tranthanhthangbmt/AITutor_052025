@@ -911,7 +911,7 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
         and st.session_state.get("read_lesson_first")
         and st.session_state.get("enable_audio_playback", True)
     ):
-    render_audio_block(msg["parts"][0]["text"], autoplay=True) 
+        render_audio_block(msg["parts"][0]["text"], autoplay=True) 
 
     # ✅ Nếu là câu cuối cùng từ AI → phát audio
     is_last = idx == len(st.session_state.messages[1:]) - 1
