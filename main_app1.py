@@ -114,6 +114,8 @@ from modules.firebase_config import init_firestore  # 🛠 Đừng quên dòng n
 #khởi tạo db
 db = init_firestore()
 
+doc_reading_enabled = False
+
 #from dashboard import show_progress_dashboard, show_part_detail_table
 
 #for data firebase
@@ -740,10 +742,23 @@ if all_parts:
             })
 
             # 🔊 Phát audio tự động nội dung vừa thêm
-            play_audio(question_prompt)
+            if doc_reading_enabled:
+                b64 = None
+                if st.session_state.get("enable_audio_playback", True):
+                    b64 = generate_and_encode_audio(question_prompt)
+                
+                # Hiển thị nút nghe
+                if b64:
+                    autoplay_attr = "autoplay" if st.session_state.get("enable_audio_playback", True) else ""
+                    st.markdown(f"""
+                    <audio controls {autoplay_attr}>
+                        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                        Trình duyệt của bạn không hỗ trợ phát âm thanh.
+                    </audio>
+                    """, unsafe_allow_html=True)
 
             #thêm chức năng đọc nội dung bài học
-            #if doc_reading_enabled:
+            #
                 #noi_dung_trich_dan = selected_part['noi_dung']
                 #audio_path = text_to_audio(noi_dung_trich_dan, "audio_trich_dan.mp3")
                 #st.audio(audio_path)
