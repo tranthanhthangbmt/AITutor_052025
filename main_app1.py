@@ -920,15 +920,13 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
         render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
 
-    if (read_lesson_first==True):
-        render_audio_block(msg["parts"][0]["text"], autoplay=True)
-    # ✅ Phát audio nếu là Gia sư AI và bật audio
-    if (
-        role == "🤖 Gia sư AI"
-        and st.session_state.get("enable_audio_playback", True)
-    ):
-        render_audio_block(msg["parts"][0]["text"], autoplay=True)
-
+    # ✅ Nếu là message cuối cùng từ AI → phát audio
+    is_last = idx == len(st.session_state.messages[1:]) - 1
+    if (role == "🤖 Gia sư AI") and (st.session_state.get("enable_audio_playback", True)):
+        if is_last:            
+            render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
+        elseif (read_lesson_first==True): # 👉 Sau đó phát audio của câu trả lời AI            
+            render_audio_block(msg["parts"][0]["text"], autoplay=True)
 
 # Ô nhập câu hỏi mới
 user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
