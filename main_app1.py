@@ -79,6 +79,17 @@ from modules.audio_module import (
     generate_and_encode_audio
 )
 
+def render_audio_block(text: str, autoplay=True):
+    b64 = generate_and_encode_audio(text)
+    autoplay_attr = "autoplay" if autoplay else ""
+    st.markdown(f"""
+    <audio controls {autoplay_attr}>
+        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+        Trình duyệt của bạn không hỗ trợ phát âm thanh.
+    </audio>
+    """, unsafe_allow_html=True)
+    
+
 from modules.firestore_logger import (
     save_exchange_to_firestore,
     save_part_feedback,
@@ -727,16 +738,16 @@ if all_parts:
                 #st.chat_message("🤖 Gia sư AI").markdown(ai_question)
                 st.session_state.messages.append({"role": "model", "parts": [{"text": ai_question}]})
 
-                #👉 PHÁT ÂM THANH CHO CÂU HỎI            
-                if st.session_state.get("enable_audio_playback", True):
-                    b64 = generate_and_encode_audio(ai_question)
-                    autoplay_attr = "autoplay"
-                    st.markdown(f"""
-                    <audio controls {autoplay_attr}>
-                        <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-                        Trình duyệt của bạn không hỗ trợ phát âm thanh.
-                    </audio>
-                    """, unsafe_allow_html=True)
+                # #👉 PHÁT ÂM THANH CHO CÂU HỎI            
+                # if st.session_state.get("enable_audio_playback", True):
+                #     b64 = generate_and_encode_audio(ai_question)
+                #     autoplay_attr = "autoplay"
+                #     st.markdown(f"""
+                #     <audio controls {autoplay_attr}>
+                #         <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                #         Trình duyệt của bạn không hỗ trợ phát âm thanh.
+                #     </audio>
+                #     """, unsafe_allow_html=True)
         
     # ✅ Nếu vừa khôi phục tiến độ, thông báo ra
     if st.session_state.get("progress_restored"):
@@ -863,19 +874,18 @@ if pdf_context:
     """
 
 # Hiển thị lịch sử chat
-for idx, msg in enumerate(st.session_state.messages[1:]):  # bỏ prompt hệ thống
+for idx, msg in enumerate(st.session_state.messages[1:]):
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
     st.chat_message(role).write(msg["parts"][0]["text"])
 
-    # Nếu là greeting lần đầu tiên và có audio
+    # ✅ Greeting ban đầu
     if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
-        autoplay_attr = "autoplay" if st.session_state.get("enable_audio_playback", True) else ""
-        st.markdown(f"""
-        <audio controls {autoplay_attr}>
-            <source src="data:audio/mp3;base64,{st.session_state['greeting_audio_b64']}" type="audio/mp3">
-            Trình duyệt của bạn không hỗ trợ phát âm thanh.
-        </audio>
-        """, unsafe_allow_html=True)
+        render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
+
+    # ✅ Nếu là câu cuối cùng từ AI → phát audio
+    is_last = idx == len(st.session_state.messages[1:]) - 1
+    if is_last and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
+        render_audio_block(msg["parts"][0]["text"], autoplay=True)
 
 # Ô nhập câu hỏi mới
 user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
