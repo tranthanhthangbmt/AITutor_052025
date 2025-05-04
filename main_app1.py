@@ -393,7 +393,7 @@ with st.sidebar:
     
     #with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
     if show_content:
-        st.markdown("🧠 **Chọn một mục bên dưới để bắt đầu:**", unsafe_allow_html=True)
+        #st.markdown("🧠 **Chọn một mục bên dưới để bắt đầu:**", unsafe_allow_html=True)
     
         lesson_parts = st.session_state.get("lesson_parts", [])
         options = []
@@ -415,7 +415,7 @@ with st.sidebar:
             selected_index = options.index(f'{selected["id"]}|{lesson_parts.index(selected)}')
         
         selected_raw = st.radio(
-            "Chọn một mục:",
+            "Chọn mục để học:",
             options=options,
             format_func=lambda x: option_labels[options.index(x)],
             key="selected_part_radio"  # 👈 dùng key để Streamlit nhớ lựa chọn
