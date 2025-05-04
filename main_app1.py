@@ -408,7 +408,12 @@ with st.sidebar:
         #selected_raw = st.radio("Chọn một mục:", options=options, format_func=lambda x: option_labels[options.index(x)], index=0 if "selected_part_for_discussion" not in st.session_state else options.index(f'{st.session_state["selected_part_for_discussion"]["id"]}|{lesson_parts.index(st.session_state["selected_part_for_discussion"])}'))
         selected_raw = None
         options = [f"{part['id']}|{idx}" for idx, part in enumerate(lesson_parts)]
-        option_labels = [f"Phần {idx+1}: {part['title']}" for idx, part in enumerate(lesson_parts)]
+        #option_labels = [f"Phần {idx+1}: {part['title']}" for idx, part in enumerate(lesson_parts)]
+        # Kiểm tra kỹ từng phần trước khi tạo label
+        option_labels = [
+            f"Phần {idx+1}: {part.get('title', 'Không có tiêu đề')}"
+            for idx, part in enumerate(lesson_parts)
+        ]
         
         # Tìm chỉ số nếu có trạng thái trước đó
         if "selected_part_for_discussion" in st.session_state:
