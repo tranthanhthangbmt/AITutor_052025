@@ -920,6 +920,8 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
         render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
 
+    if (read_lesson_first==True):
+        render_audio_block(msg["parts"][0]["text"], autoplay=True)
     # ✅ Phát audio nếu là Gia sư AI và bật audio
     if (
         role == "🤖 Gia sư AI"
