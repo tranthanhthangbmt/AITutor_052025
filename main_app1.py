@@ -918,38 +918,22 @@ if pdf_context:
     """
 
 # Hiển thị lịch sử chat
-previous_msg = None
 lesson_intro_indices = st.session_state.get("lesson_intro_indices", [])
 
 for idx, msg in enumerate(st.session_state.messages[1:-1]):  
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
-    st.chat_message(role).write(msg["parts"][0]["text"])
-
-    absolute_idx = idx + 1
-    is_last = idx == len(st.session_state.messages[1:]) - 1
-
+    
     if role == "🤖 Gia sư AI":
-        autoplay = False  # Mặc định không tự động
-
         # ✅ Greeting đầu tiên
         if idx == 0 and st.session_state.get("enable_audio_playback", True):
-            autoplay = False
+           st.chat_message(role).write(msg["parts"][0]["text"])
+           render_audio_block(msg["parts"][0]["text"], autoplay=False)
+           
 
         # ✅ Trích dẫn bài học nếu bật đọc nội dung
-        if absolute_idx in lesson_intro_indices and st.session_state.get("read_lesson_first", False):
-            autoplay = False
-
-        # ✅ Nếu là message cuối cùng
-        if is_last and st.session_state.get("enable_audio_playback", True):
-            autoplay = False
-            if previous_msg:
-                # 👉 Phát cả message trước nếu cần
-                render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
-
-        # ✅ Phát audio cho mọi message AI (với autoplay theo điều kiện)
-        render_audio_block(msg["parts"][0]["text"], autoplay=autoplay)
-
-    previous_msg = msg
+        if lesson_intro_indices or st.session_state.get("read_lesson_first", True):
+            st.chat_message(role).write(msg["parts"][0]["text"])
+            render_audio_block(msg["parts"][0]["text"], autoplay=False)
 
 # 👉 Hiển thị message cuối cùng
 msg = st.session_state.messages[-1]
