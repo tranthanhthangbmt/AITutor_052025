@@ -919,7 +919,6 @@ if pdf_context:
 
 # Hiển thị lịch sử chat
 lesson_intro_indices = st.session_state.get("lesson_intro_indices", [])
-previous_msg = None
 
 for idx, msg in enumerate(st.session_state.messages[1:-1]):  
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
@@ -935,15 +934,10 @@ for idx, msg in enumerate(st.session_state.messages[1:-1]):
         is_last = idx == len(st.session_state.messages[1:]) - 1
 
         #if is_last and previous_msg:
-        if read_lesson_first:
-            # 👉 Phát message trước nếu là cuối cùng (câu hỏi AI)
-            st.chat_message(role).write(previous_msg["parts"][0]["text"])
-            render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)        
+        if read_lesson_first:   
             # 👉 Phát bình thường các đoạn AI nếu bật chế độ đọc bài học
             st.chat_message(role).write(msg["parts"][0]["text"])
             render_audio_block(msg["parts"][0]["text"], autoplay=True)
-
-    previous_msg = msg
     
     # ✅ Trích dẫn bài học nếu là message được đánh dấu và chế độ đọc bài học được bật
     # elif role == "🤖 Gia sư AI" and absolute_idx in lesson_intro_indices and st.session_state.get("read_lesson_first", True):
