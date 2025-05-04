@@ -155,6 +155,22 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+h1 {
+    font-size: 24px !important;
+    line-height: 1.5;
+    font-weight: 600;
+}
+h2 {
+    font-size: 21px !important;
+}
+h3 {
+    font-size: 19px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 uploaded_files = []  # ✅ đảm bảo biến tồn tại trong mọi trường hợp
 
 input_key = st.session_state.get("GEMINI_API_KEY", "")
