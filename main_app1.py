@@ -411,8 +411,8 @@ with st.sidebar:
             part_id, idx = selected_raw.split("|")
             st.session_state["selected_part_for_discussion"] = lesson_parts[int(idx)]
             st.session_state["force_ai_to_ask"] = True
-            if st.session_state.get("messages"):
-                st.session_state["messages"] = [st.session_state["messages"][0]]
+            #if st.session_state.get("messages"):
+            #    st.session_state["messages"] = [st.session_state["messages"][0]]
     
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
