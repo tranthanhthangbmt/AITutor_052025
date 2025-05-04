@@ -740,27 +740,28 @@ if all_parts:
         
         #st.subheader("🧪 Nội dung gửi lên Gemini:")
         #st.code(question_prompt, language="markdown")  # để debug prompt
-        
-        with st.spinner("🤖 Đang tạo câu hỏi từ phần bạn chọn..."):
-            user_message = {
-                "role": "user",
-                "parts": [{"text": question_prompt}]
-            }
-            user_messageFilter = {
-                "role": "user",
-                "parts": [{"text": question_promptFilter}]
-            }
-            st.session_state.messages.append(user_messageFilter)
-        
-            # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
-            if "lesson_intro_indices" not in st.session_state:
-                st.session_state["lesson_intro_indices"] = []
-            lesson_intro_index = len(st.session_state.messages) - 1
-            st.session_state["lesson_intro_indices"].append(lesson_intro_index)
+
+        if read_lesson_first:
+            with st.spinner("🤖 Đang tạo câu hỏi từ phần bạn chọn..."):
+                user_message = {
+                    "role": "user",
+                    "parts": [{"text": question_prompt}]
+                }
+                user_messageFilter = {
+                    "role": "user",
+                    "parts": [{"text": question_promptFilter}]
+                }
+                st.session_state.messages.append(user_messageFilter)
+            
+                # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
+                if "lesson_intro_indices" not in st.session_state:
+                    st.session_state["lesson_intro_indices"] = []
+                lesson_intro_index = len(st.session_state.messages) - 1
+                st.session_state["lesson_intro_indices"].append(lesson_intro_index)
         
             # ✅ Phát audio NGAY nếu bật tính năng đọc bài học
-            if st.session_state.get("read_lesson_first", False) and st.session_state.get("enable_audio_playback", True):
-                render_audio_block(question_prompt, autoplay=True)
+            # if st.session_state.get("read_lesson_first", False) and st.session_state.get("enable_audio_playback", True):
+            #     render_audio_block(question_prompt, autoplay=True)
 
             # ✅ Phát audio ngay nếu bật chế độ đọc bài học
             # if st.session_state.get("read_lesson_first") and st.session_state.get("enable_audio_playback", True):
