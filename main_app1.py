@@ -25,7 +25,6 @@ import base64
 import uuid
 import os
 
-from firebase_config import init_firestore
 from firebase_admin import firestore  # ✨ Thêm dòng này ở đầu file chính
 
 db = init_firestore()
