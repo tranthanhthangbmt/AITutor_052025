@@ -314,7 +314,7 @@ with st.sidebar:
     """)
     "[Lấy API key tại đây](https://aistudio.google.com/app/apikey)"
     # 🔊 Cho phép bật/tắt tự động phát audio
-    enable_audio_default = True  # ✅ Mặc định: Bật nghe audio
+    enable_audio_default = False  # ✅ Mặc định: Bật nghe audio
     st.session_state["enable_audio_playback"] = st.sidebar.checkbox("🔊 Tự động phát âm thanh", value=enable_audio_default)
     if st.session_state.get("show_sidebar_inputs", False):
         st.markdown("📚 **Chọn bài học hoặc tải lên bài học**")
@@ -394,7 +394,7 @@ with st.sidebar:
     show_content = st.sidebar.checkbox("📑 Mục lục bài học", value=False)
     #doc_reading_enabled = st.checkbox("✅ Đọc nội dung bài học trước khi đọc câu hỏi", value=False)
     # Hiển thị checkbox cho người dùng
-    read_lesson_first = st.checkbox("Đọc nội dung bài học", value=True)
+    read_lesson_first = st.checkbox("Đọc nội dung bài học", value=False)
     
     #with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
     if show_content:
