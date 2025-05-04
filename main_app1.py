@@ -917,20 +917,18 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     st.chat_message(role).write(msg["parts"][0]["text"])
 
     absolute_idx = idx + 1  # do đã bỏ messages[0]
-
-    # ✅ Greeting ban đầu
-    if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
-        render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
+    is_last = idx == len(st.session_state.messages[1:]) - 1
 
     # ✅ Nếu là Gia sư AI và bật audio
     if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
-        is_last = idx == len(st.session_state.messages[1:]) - 1
-
-        if is_last and previous_msg:
-            # 👉 Phát message trước nếu là cuối cùng (câu hỏi AI)
+        if idx == 0 and "greeting_audio_b64" in st.session_state:
+            # 👉 Dùng audio greeting có sẵn nếu được tạo trước (ưu tiên)
+            render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
+        elif is_last and previous_msg:
+            # 👉 Ghép phát message trước nếu là message cuối
             render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
         elif st.session_state.get("read_lesson_first", False):
-            # 👉 Phát bình thường các đoạn AI nếu bật chế độ đọc bài học
+            # 👉 Phát các đoạn AI ở giữa nếu bật chế độ đọc
             render_audio_block(msg["parts"][0]["text"], autoplay=True)
 
     previous_msg = msg
