@@ -392,7 +392,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     show_content = st.sidebar.checkbox("📑 Mục lục bài học", value=False)
-    doc_reading_enabled = st.checkbox("✅ Đọc nội dung bài học trước khi đọc câu hỏi", value=False)
+    #doc_reading_enabled = st.checkbox("✅ Đọc nội dung bài học trước khi đọc câu hỏi", value=False)
     
     #with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
     if show_content:
@@ -693,6 +693,9 @@ if all_parts:
 
     # 2. Hiển thị bảng mục lục (mục lục trên messages)
     #st.markdown("### 📚 **Mục lục bài học**")
+
+    # Hiển thị checkbox cho người dùng
+    read_lesson_first = st.checkbox("Đọc nội dung bài học trước khi đọc câu hỏi", value=True)
     
     df = pd.DataFrame(parts_sorted)
     #st.dataframe(df[["id", "loai", "tieu_de"]]) #đang ẩn để dùng nút content
@@ -741,11 +744,14 @@ if all_parts:
                 "parts": [{"text": question_prompt}]
             })
 
-            # 🔊 Phát audio tự động nội dung vừa thêm
-            if doc_reading_enabled:
-                b64 = generate_and_encode_audio(question_prompt)
+            # 🔊 Phát audio tự động nội dung vừa thêm            
+            # Nếu người dùng chọn checkbox và có nội dung để đọc
+            if read_lesson_first and question_prompt:
+                b64 = None
+                if st.session_state.get("enable_audio_playback", True):
+                    b64 = generate_and_encode_audio(question_prompt)
                 
-                # Hiển thị nút nghe
+                # Hiển thị audio player
                 if b64:
                     autoplay_attr = "autoplay" if st.session_state.get("enable_audio_playback", True) else ""
                     st.markdown(f"""
