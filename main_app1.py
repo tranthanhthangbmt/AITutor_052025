@@ -38,6 +38,12 @@ import json
 # Giao diện Streamlit
 st.set_page_config(page_title="Tutor AI", page_icon="🎓")
 
+# Trước đoạn if này, thêm:
+if "sidebar_state" not in st.session_state:
+    st.session_state.sidebar_state = "expanded"
+
+sidebar_state = st.session_state.sidebar_state
+
 if "toc_html" not in st.session_state:
     st.session_state["toc_html"] = "<p><em>Chưa có mục lục bài học.</em></p>"
 
