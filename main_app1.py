@@ -404,8 +404,7 @@ with st.sidebar:
             label = f"✅ {part_id} – {tieu_de}" if trang_thai == "hoan_thanh" else f"{part_id} – {tieu_de}"
             options.append(f"{part_id}|{idx}")
             option_labels.append(label)
-    
-        #selected_raw = st.radio("Chọn một mục:", options=options, format_func=lambda x: option_labels[options.index(x)], index=0 if "selected_part_for_discussion" not in st.session_state else options.index(f'{st.session_state["selected_part_for_discussion"]["id"]}|{lesson_parts.index(st.session_state["selected_part_for_discussion"])}'))
+            
         selected_index = None
         if "selected_part_for_discussion" in st.session_state:
             selected = st.session_state["selected_part_for_discussion"]
@@ -415,15 +414,19 @@ with st.sidebar:
             "Chọn một mục:",
             options=options,
             format_func=lambda x: option_labels[options.index(x)],
-            index=selected_index
+            key="selected_part_radio"  # 👈 dùng key để Streamlit nhớ lựa chọn
         )
-    
+        
+        # Cập nhật vào session_state nếu có thay đổi
         if selected_raw:
             part_id, idx = selected_raw.split("|")
-            st.session_state["selected_part_for_discussion"] = lesson_parts[int(idx)]
-            st.session_state["force_ai_to_ask"] = True
-            #if st.session_state.get("messages"):
-            #    st.session_state["messages"] = [st.session_state["messages"][0]]
+            new_selection = lesson_parts[int(idx)]
+            
+            # So sánh tránh cập nhật dư thừa
+            current = st.session_state.get("selected_part_for_discussion", {})
+            if current.get("id") != part_id:
+                st.session_state["selected_part_for_discussion"] = new_selection
+                st.session_state["force_ai_to_ask"] = True
     
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
