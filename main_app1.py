@@ -952,14 +952,14 @@ for idx, msg in enumerate(st.session_state.messages[1:-1]):
     if role == "🧑‍🎓 Học sinh":
         st.chat_message(role).write(msg["parts"][0]["text"])
 
-# 👉 Hiển thị message cuối cùng
-msg = st.session_state.messages[-1]
-role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
-st.chat_message(role).write(msg["parts"][0]["text"])
+# # 👉 Hiển thị message cuối cùng
+# msg = st.session_state.messages[-1]
+# role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
+# st.chat_message(role).write(msg["parts"][0]["text"])
 
-# 👉 Phát audio nếu là Gia sư AI và bật auto audio
-if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
-    render_audio_block(msg["parts"][0]["text"], autoplay=False)
+# # 👉 Phát audio nếu là Gia sư AI và bật auto audio
+# if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
+#     render_audio_block(msg["parts"][0]["text"], autoplay=False)
 
 # Ô nhập câu hỏi mới
 user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
