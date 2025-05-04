@@ -405,7 +405,18 @@ with st.sidebar:
             options.append(f"{part_id}|{idx}")
             option_labels.append(label)
     
-        selected_raw = st.radio("Chọn một mục:", options=options, format_func=lambda x: option_labels[options.index(x)], index=0 if "selected_part_for_discussion" not in st.session_state else options.index(f'{st.session_state["selected_part_for_discussion"]["id"]}|{lesson_parts.index(st.session_state["selected_part_for_discussion"])}'))
+        #selected_raw = st.radio("Chọn một mục:", options=options, format_func=lambda x: option_labels[options.index(x)], index=0 if "selected_part_for_discussion" not in st.session_state else options.index(f'{st.session_state["selected_part_for_discussion"]["id"]}|{lesson_parts.index(st.session_state["selected_part_for_discussion"])}'))
+        selected_index = None
+        if "selected_part_for_discussion" in st.session_state:
+            selected = st.session_state["selected_part_for_discussion"]
+            selected_index = options.index(f'{selected["id"]}|{lesson_parts.index(selected)}')
+        
+        selected_raw = st.radio(
+            "Chọn một mục:",
+            options=options,
+            format_func=lambda x: option_labels[options.index(x)],
+            index=selected_index
+        )
     
         if selected_raw:
             part_id, idx = selected_raw.split("|")
