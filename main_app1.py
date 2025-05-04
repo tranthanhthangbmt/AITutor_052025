@@ -742,7 +742,7 @@ if all_parts:
                 "role": "user",
                 "parts": [{"text": question_prompt}]
             }
-            st.session_state.messages.append(user_message)
+            st.session_state.messages.append(question_prompt)
         
             # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
             # 🏷️ Đánh dấu index
@@ -752,8 +752,8 @@ if all_parts:
             st.session_state["lesson_intro_indices"].append(lesson_intro_index)
 
             # ✅ Phát audio ngay nếu bật chế độ đọc bài học
-            if st.session_state.get("read_lesson_first") and st.session_state.get("enable_audio_playback", True):
-                render_audio_block(question_prompt, autoplay=True)
+            # if st.session_state.get("read_lesson_first") and st.session_state.get("enable_audio_playback", True):
+            #     render_audio_block(question_prompt, autoplay=True)
 
             # # 🔊 Phát audio tự động nội dung vừa thêm            
             # # Nếu người dùng chọn checkbox và có nội dung để đọc
