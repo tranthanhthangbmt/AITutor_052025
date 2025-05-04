@@ -405,25 +405,34 @@ with st.sidebar:
             options.append(f"{part_id}|{idx}")
             option_labels.append(label)
     
-        #selected_raw = st.radio("Chọn một mục:", options=options, format_func=lambda x: option_labels[options.index(x)], index=0 if "selected_part_for_discussion" not in st.session_state else options.index(f'{st.session_state["selected_part_for_discussion"]["id"]}|{lesson_parts.index(st.session_state["selected_part_for_discussion"])}'))
-        selected_index = None
-        if "selected_part_for_discussion" in st.session_state:
-            selected = st.session_state["selected_part_for_discussion"]
-            selected_index = options.index(f'{selected["id"]}|{lesson_parts.index(selected)}')
+        # Tạo danh sách options và labels
+        options = [f"{part['id']}|{idx}" for idx, part in enumerate(lesson_parts)]
+        option_labels = [f"Phần {idx+1}: {part.get('title', 'Không có tiêu đề')}" for idx, part in enumerate(lesson_parts)]
         
+        # Tìm giá trị mặc định từ session_state (nếu có)
+        default_value = options[0]
+        if "selected_part_for_discussion" in st.session_state:
+            try:
+                selected = st.session_state["selected_part_for_discussion"]
+                idx = lesson_parts.index(selected)
+                default_value = f"{selected['id']}|{idx}"
+            except (ValueError, KeyError):
+                pass  # giữ mặc định ban đầu nếu không tìm được
+        
+        # Sử dụng radio với key để streamlit quản lý trạng thái, không cần index
         selected_raw = st.radio(
             "Chọn một mục:",
             options=options,
             format_func=lambda x: option_labels[options.index(x)],
-            index=selected_index
+            key="selected_part_radio",
+            index=options.index(default_value)
         )
-    
+        
+        # Cập nhật lại session_state dựa trên lựa chọn
         if selected_raw:
             part_id, idx = selected_raw.split("|")
             st.session_state["selected_part_for_discussion"] = lesson_parts[int(idx)]
             st.session_state["force_ai_to_ask"] = True
-            #if st.session_state.get("messages"):
-            #    st.session_state["messages"] = [st.session_state["messages"][0]]
     
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
