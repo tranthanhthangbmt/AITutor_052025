@@ -45,8 +45,16 @@ if "toc_html" not in st.session_state:
 #for menu content
 import streamlit.components.v1 as components
 
-from content_parser import clean_text, make_id, classify_section, parse_pdf_file, parse_docx_file, parse_uploaded_file
-from session_manager import (
+from modules.content_parser import (
+    clean_text,
+    make_id,
+    classify_section,
+    parse_pdf_file,
+    parse_docx_file,
+    parse_uploaded_file
+)
+
+from modules.session_manager import (
     generate_session_id,
     init_session_state,
     init_lesson_progress,
@@ -56,7 +64,8 @@ from session_manager import (
     update_progress,
     get_current_session_info
 )
-from progress_tracker import (
+
+from modules.progress_tracker import (
     get_progress_summary,
     list_incomplete_parts,
     get_low_understanding_parts,
@@ -64,25 +73,25 @@ from progress_tracker import (
     get_progress_table
 )
 
-from audio_module import (
+from modules.audio_module import (
     generate_audio_filename,
     generate_audio_async,
     play_audio,
     generate_and_encode_audio
 )
 
-from firestore_logger import (
+from modules.firestore_logger import (
     save_exchange_to_firestore,
     save_part_feedback,
     get_history
 )
 
-from  file_reader import (
+from modules.file_reader import (
     extract_text_from_uploaded_file,
     extract_pdf_text_from_url    
 )
 
-from text_utils import (
+from modules.text_utils import (
     clean_html_to_text,
     format_mcq_options,
     convert_to_mathjax,
