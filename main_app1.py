@@ -745,11 +745,14 @@ if all_parts:
             st.session_state.messages.append(user_message)
         
             # 🏷️ Đánh dấu index của message là phần giới thiệu bài học
-            # 🏷️ Đánh dấu index
             if "lesson_intro_indices" not in st.session_state:
                 st.session_state["lesson_intro_indices"] = []
             lesson_intro_index = len(st.session_state.messages) - 1
             st.session_state["lesson_intro_indices"].append(lesson_intro_index)
+        
+            # ✅ Phát audio NGAY nếu bật tính năng đọc bài học
+            if st.session_state.get("read_lesson_first", False) and st.session_state.get("enable_audio_playback", True):
+                render_audio_block(question_prompt, autoplay=True)
 
             # ✅ Phát audio ngay nếu bật chế độ đọc bài học
             # if st.session_state.get("read_lesson_first") and st.session_state.get("enable_audio_playback", True):
@@ -920,14 +923,19 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     if idx == 0 and role == "🤖 Gia sư AI" and "greeting_audio_b64" in st.session_state:
         render_audio_block(st.session_state["messages"][1]["parts"][0]["text"], autoplay=True)
 
-    # ✅ Phát audio nếu đây là message phần giới thiệu bài học
+    # ✅ Phát audio nếu đây là message phần giới thiệu bài học (dự phòng nếu reload)
     if (
         absolute_idx in lesson_intro_indices
         and st.session_state.get("read_lesson_first", False)
         and st.session_state.get("enable_audio_playback", True)
     ):
         render_audio_block(msg["parts"][0]["text"], autoplay=True)
-        
+
+    # ✅ Phát audio nếu là câu trả lời cuối từ AI
+    is_last = idx == len(st.session_state.messages[1:]) - 1
+    if is_last and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
+        render_audio_block(msg["parts"][0]["text"], autoplay=True)
+
     previous_msg = msg
 
 
