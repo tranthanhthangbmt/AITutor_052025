@@ -144,15 +144,6 @@ key_from_local = st_javascript("JSON.parse(window.localStorage.getItem('gemini_a
 if not input_key and key_from_local:
     st.session_state["GEMINI_API_KEY"] = key_from_local
     input_key = key_from_local
-
-def get_gpt_response(messages):
-    # Ví dụ gọi OpenAI API hoặc xử lý nội dung
-    import openai
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",  # hoặc model khác bạn đang dùng
-        messages=messages
-    )
-    return response['choices'][0]['message']['content']
     
 @st.cache_data
 def load_available_lessons_from_txt(url):
@@ -926,8 +917,8 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
 
     if st.session_state.should_generate_response:
         with st.spinner("Đang phản hồi..."):
-            response = get_gpt_response(st.session_state.messages)
-            st.session_state.messages.append({"role": "assistant", "content": response})
+            reply = chat_with_gemini(st.session_state.messages)
+            st.session_state.messages.append({"role": "assistant", "content": reply})
         st.session_state.should_generate_response = False
 
 # Ô nhập câu hỏi mới
