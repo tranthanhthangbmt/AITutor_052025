@@ -919,27 +919,35 @@ if pdf_context:
 
 # Hiển thị lịch sử chat
 previous_msg = None
+lesson_intro_indices = st.session_state.get("lesson_intro_indices", [])
 
 for idx, msg in enumerate(st.session_state.messages[1:]):  
     role = "🧑‍🎓 Học sinh" if msg["role"] == "user" else "🤖 Gia sư AI"
     st.chat_message(role).write(msg["parts"][0]["text"])
 
-    absolute_idx = idx + 1  # do đã bỏ messages[0]
+    absolute_idx = idx + 1
     is_last = idx == len(st.session_state.messages[1:]) - 1
 
-    # ✅ Greeting ban đầu — ưu tiên dùng audio có sẵn nếu có
-    if idx == 0 and role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
-        greeting_text = st.session_state["messages"][1]["parts"][0]["text"]
-        render_audio_block(greeting_text, autoplay=True)
+    if role == "🤖 Gia sư AI":
+        autoplay = False  # Mặc định không tự động
 
-    # ✅ Nếu là Gia sư AI và bật audio
-    if role == "🤖 Gia sư AI" and st.session_state.get("enable_audio_playback", True):
-        if is_last and previous_msg:
-            # 👉 Ghép phát message trước nếu là cuối
-            render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
-        elif st.session_state.get("read_lesson_first", False):
-            # 👉 Phát các đoạn AI ở giữa nếu bật đọc bài học
-            render_audio_block(msg["parts"][0]["text"], autoplay=True)
+        # ✅ Greeting đầu tiên
+        if idx == 0 and st.session_state.get("enable_audio_playback", True):
+            autoplay = True
+
+        # ✅ Trích dẫn bài học nếu bật đọc nội dung
+        if absolute_idx in lesson_intro_indices and st.session_state.get("read_lesson_first", False):
+            autoplay = True
+
+        # ✅ Nếu là message cuối cùng
+        if is_last and st.session_state.get("enable_audio_playback", True):
+            autoplay = True
+            if previous_msg:
+                # 👉 Phát cả message trước nếu cần
+                render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
+
+        # ✅ Phát audio cho mọi message AI (với autoplay theo điều kiện)
+        render_audio_block(msg["parts"][0]["text"], autoplay=autoplay)
 
     previous_msg = msg
 
