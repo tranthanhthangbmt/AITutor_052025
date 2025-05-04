@@ -928,7 +928,7 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
 
         if is_last:
             # 👉 Phát message trước nếu là cuối cùng (câu hỏi AI)
-            render_audio_block(previous_msg["parts"][0]["text"], autoplay=True)
+            render_audio_block(msg["parts"][0]["text"], autoplay=True)
         elif st.session_state.get("read_lesson_first", False):
             # 👉 Phát bình thường các đoạn AI nếu bật chế độ đọc bài học
             render_audio_block(msg["parts"][0]["text"], autoplay=True)
