@@ -934,10 +934,10 @@ for idx, msg in enumerate(st.session_state.messages[1:-1]):
         is_last = idx == len(st.session_state.messages[1:]) - 1
 
         #if is_last and previous_msg:
-        if read_lesson_first:   
+       if (role == "🤖 Gia sư AI") and  read_lesson_first:   
             # 👉 Phát bình thường các đoạn AI nếu bật chế độ đọc bài học
             st.chat_message(role).write(msg["parts"][0]["text"])
-            render_audio_block(msg["parts"][0]["text"], autoplay=True)
+            render_audio_block(msg["parts"][0]["text"], autoplay=False)
     
     # ✅ Trích dẫn bài học nếu là message được đánh dấu và chế độ đọc bài học được bật
     # elif role == "🤖 Gia sư AI" and absolute_idx in lesson_intro_indices and st.session_state.get("read_lesson_first", True):
