@@ -389,7 +389,10 @@ with st.sidebar:
         </style>
     """, unsafe_allow_html=True)
     
-    with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
+    show_content = st.sidebar.checkbox("📑 Content – Mục lục bài học", value=False)
+    
+    #with st.sidebar.expander("📑 Content – Mục lục bài học", expanded=True):
+    if show_content:
         st.markdown("🧠 **Chọn một mục bên dưới để bắt đầu:**", unsafe_allow_html=True)
     
         lesson_parts = st.session_state.get("lesson_parts", [])
