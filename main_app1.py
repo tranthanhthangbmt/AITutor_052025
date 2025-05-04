@@ -743,6 +743,12 @@ if all_parts:
                 "parts": [{"text": question_prompt}]
             })
 
+            #thêm chức năng đọc nội dung bài học
+            if doc_reading_enabled:
+                noi_dung_trich_dan = selected_part['noi_dung']
+                audio_path = text_to_audio(noi_dung_trich_dan, "audio_trich_dan.mp3")
+                st.audio(audio_path)
+
             #Bước 2: Gợi ý cách viết prompt tốt (ngắn + rõ)
             selected_part = st.session_state["selected_part_for_discussion"]
 
