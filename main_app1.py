@@ -38,25 +38,6 @@ import json
 # Giao diện Streamlit
 st.set_page_config(page_title="Tutor AI", page_icon="🎓")
 
-#Bước 1: Chèn CSS để cố định phần nhập ở dưới cùng
-st.markdown("""
-    <style>
-    .fixed-bottom-input {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: white;
-        padding: 10px;
-        box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-        z-index: 999;
-    }
-    .stTextArea textarea {
-        height: 100px !important;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
 if "toc_html" not in st.session_state:
     st.session_state["toc_html"] = "<p><em>Chưa có mục lục bài học.</em></p>"
 
@@ -1101,63 +1082,25 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
 # Ô nhập câu hỏi mới
 #user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
 # Multiline input thay cho chat_input
-# user_input = st.text_area(
-#     "💬 Nhập câu trả lời hoặc câu hỏi...",
-#     height=150,
-#     max_chars=10000,
-#     key="user_input"
-# )
+user_input = st.text_area(
+    "💬 Nhập câu trả lời hoặc câu hỏi...",
+    height=150,
+    max_chars=10000,
+    key="user_input"
+)
 
-# # Nút gửi riêng
-# #submitted = st.button("Gửi")
-# submitted = st.button("➤", help="Nhấn để gửi nội dung")
+# Nút gửi riêng
+#submitted = st.button("Gửi")
+submitted = st.button("➤", help="Nhấn để gửi nội dung")
 
-#Bước 2: Bọc text_area và button trong st.markdown HTML
-# with st.container():
-#     st.markdown('<div class="fixed-bottom-input">', unsafe_allow_html=True)
-#     user_input = st.text_area(
-#         "💬 Nhập câu trả lời hoặc câu hỏi...",
-#         max_chars=10000,
-#         key="user_input"
-#     )
-#     submitted = st.button("➤", help="Nhấn để gửi nội dung")
-#     st.markdown('</div>', unsafe_allow_html=True)
+# Chỉ khi người dùng nhấn nút gửi
+if submitted and user_input.strip() != "":
+    # Giờ đây user_input chứa nội dung đã nhập
+    with st.chat_message("user"):
+        st.markdown(user_input)
 
-# # Chỉ khi người dùng nhấn nút gửi
-# if submitted and user_input.strip() != "":
-#     # Giờ đây user_input chứa nội dung đã nhập
-#     with st.chat_message("user"):
-#         st.markdown(user_input)
-
-# Hiển thị các tin nhắn
-for msg in st.session_state.get("messages", []):
-    #st.chat_message("user" if msg["role"] == "user" else "assistant").markdown(msg["text"])
-    if "text" in msg:
-        st.chat_message("user" if msg["role"] == "user" else "assistant").markdown(msg["text"])
-    else:
-        st.warning("Missing 'text' key in message. Message content skipped.")
-
-# 🟩 Luôn tạo ô input ở dưới cùng
-input_container = st.empty()
-
-with input_container.container():
-    with st.form(key=f"form_{len(st.session_state.get('messages', []))}"):
-        user_input = st.text_area(
-            "💬 Nhập câu trả lời hoặc câu hỏi...",
-            height=150,
-            max_chars=10000,
-            key=f"user_input_{len(st.session_state.get('messages', []))}"  # key phải khác nhau mỗi lần
-        )
-        submitted = st.form_submit_button("➤")
-    
 #if user_input:
 if submitted and user_input.strip() != "":
-    st.session_state.messages = st.session_state.get("messages", [])
-    st.session_state.messages.append({"role": "user", "text": user_input})
-
-    # Hiển thị ngay message mới
-    st.chat_message("user").markdown(user_input)
-    
     # Xử lý
     # 1. Hiển thị câu trả lời học sinh
     st.chat_message("🧑‍🎓 Học sinh").write(user_input)
