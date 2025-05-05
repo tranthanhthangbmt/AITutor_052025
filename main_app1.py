@@ -302,6 +302,12 @@ def is_valid_gemini_key(key):
 #thiết lập ẩn phần bài học
 if "show_sidebar_inputs" not in st.session_state:
     st.session_state["show_sidebar_inputs"] = True  # ← bật mặc định
+
+import random
+
+# Lấy danh sách API keys từ secrets (ví dụ từ mục [openai_keys] hoặc [gemini_keys])
+def get_random_key():
+    return random.choice(st.secrets["gemini_keys"]["keys"])
     
 # ⬇ Lấy input từ người dùng ở sidebar trước
 with st.sidebar:
@@ -378,6 +384,16 @@ with st.sidebar:
         input_key = key_from_local
     
     # ✅ Tạo textbox với giá trị đúng
+    #input_key = st.text_input("🔑 Gemini API Key", value=input_key, type="password", key="GEMINI_API_KEY")
+    # ✅ Tạo textbox với giá trị đúng
+    # ✅ Tạo textbox với giá trị đúng
+    if "GEMINI_API_KEY" not in st.session_state or st.session_state.GEMINI_API_KEY == "":
+        # Lấy random API key từ danh sách nếu chưa có sẵn
+        input_key = get_random_key()
+        st.session_state.GEMINI_API_KEY = input_key
+    else:
+        input_key = st.session_state.GEMINI_API_KEY
+    
     input_key = st.text_input("🔑 Gemini API Key", value=input_key, type="password", key="GEMINI_API_KEY")
 
     # 🔄 Chọn mô hình Gemini
