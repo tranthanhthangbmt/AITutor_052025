@@ -1157,6 +1157,10 @@ if st.button("Gửi"):
 # Scroll xuống cuối trang
 components.html(scroll_script)
 
+with st.form("my_form"):
+    user_input = st.text_area("Enter your text")
+    submitted = st.form_submit_button("Submit")
+    
 #if user_input:
 if submitted and user_input.strip() != "":
     # Xử lý
