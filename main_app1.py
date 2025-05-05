@@ -311,7 +311,7 @@ def get_random_key():
 
 import uuid
 #Bước 1: Đặt phần nhập trong một hàm riêng
-def render_input_area():
+def render_input_area(suffix=""):
     st.markdown("---")  # Đường kẻ phân cách
     user_input = st.text_area(
         "💬 Nhập câu trả lời hoặc câu hỏi...",
@@ -319,7 +319,8 @@ def render_input_area():
         max_chars=10000,
         key=f"user_input_{uuid.uuid4()}"
     )
-    submitted = st.button("➤", help="Nhấn để gửi nội dung")
+    #submitted = st.button("➤", help="Nhấn để gửi nội dung")
+    submitted = st.button("➤", help="Nhấn để gửi nội dung", key=f"submit_button_input_area_{suffix}")
     return user_input, submitted
 
 
@@ -1108,7 +1109,8 @@ user_input = st.text_area(
 submitted = st.button("➤", help="Nhấn để gửi nội dung")
 
 # Sau khi hiển thị tin nhắn, âm thanh, v.v.
-user_input, submitted = render_input_area()
+user_input, submitted = render_input_area("chat_tab1")
+#user_input, submitted = render_input_area()
 # Chỉ khi người dùng nhấn nút gửi
 # if submitted and user_input.strip() != "":
 #     # Giờ đây user_input chứa nội dung đã nhập
