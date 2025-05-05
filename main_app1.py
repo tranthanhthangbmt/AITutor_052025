@@ -184,7 +184,7 @@ if not input_key and key_from_local:
     input_key = key_from_local
 
 # Lấy danh sách API keys từ secrets
-api_keys = st.secrets["api_keys"]["keys"]
+api_keys = st.secrets["gemini_keys"]["keys"]
 api_index = 0  # Index ban đầu
 
 # Hàm gọi API với cơ chế thử nhiều key
