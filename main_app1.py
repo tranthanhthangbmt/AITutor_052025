@@ -308,7 +308,20 @@ import random
 # Lấy danh sách API keys từ secrets (ví dụ từ mục [openai_keys] hoặc [gemini_keys])
 def get_random_key():
     return random.choice(st.secrets["gemini_keys"]["keys"])
-    
+
+#Bước 1: Đặt phần nhập trong một hàm riêng
+def render_input_area():
+    st.markdown("---")  # Đường kẻ phân cách
+    user_input = st.text_area(
+        "💬 Nhập câu trả lời hoặc câu hỏi...",
+        height=150,
+        max_chars=10000,
+        key="user_input"
+    )
+    submitted = st.button("➤", help="Nhấn để gửi nội dung")
+    return user_input, submitted
+
+
 # ⬇ Lấy input từ người dùng ở sidebar trước
 with st.sidebar:
     st.markdown("""
@@ -1093,14 +1106,18 @@ user_input = st.text_area(
 #submitted = st.button("Gửi")
 submitted = st.button("➤", help="Nhấn để gửi nội dung")
 
+# Sau khi hiển thị tin nhắn, âm thanh, v.v.
+user_input, submitted = render_input_area()
 # Chỉ khi người dùng nhấn nút gửi
-if submitted and user_input.strip() != "":
-    # Giờ đây user_input chứa nội dung đã nhập
-    with st.chat_message("user"):
-        st.markdown(user_input)
-
+# if submitted and user_input.strip() != "":
+#     # Giờ đây user_input chứa nội dung đã nhập
+#     with st.chat_message("user"):
+#         st.markdown(user_input)
+        
 #if user_input:
 if submitted and user_input.strip() != "":
+    with st.chat_message("user"):
+        st.markdown(user_input)
     # Xử lý
     # 1. Hiển thị câu trả lời học sinh
     st.chat_message("🧑‍🎓 Học sinh").write(user_input)
