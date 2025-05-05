@@ -1129,40 +1129,31 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
 #     with st.chat_message("user"):
 #         st.markdown(user_input)
 
-# Scroll xuống cuối khi load
-scroll_script = """
-<script>
-window.scrollTo(0, document.body.scrollHeight);
-</script>
-"""
+# Hiển thị các tin nhắn
+for msg in st.session_state.get("messages", []):
+    st.chat_message("user" if msg["role"] == "user" else "assistant").markdown(msg["text"])
 
-st.title("🧪 Ứng dụng demo Text Area cố định cuối")
+# 🟩 Luôn tạo ô input ở dưới cùng
+input_container = st.empty()
 
-# Hiển thị các message cũ
-messages = st.session_state.get("messages", [])
-for msg in messages:
-    st.write(msg)
-
-# Text area giống như input
-user_input = st.text_area("Nhập nội dung", key="input_area", height=100)
-
-if st.button("Gửi"):
-    if user_input:
-        messages.append(f"👤 Bạn: {user_input}")
-        st.session_state.messages = messages
-        st.experimental_rerun()  # Tự động reload để giả lập chat
-        # reset input_area
-        st.session_state.input_area = ""
-
-# Scroll xuống cuối trang
-components.html(scroll_script)
-
-with st.form("my_form"):
-    user_input = st.text_area("Enter your text")
-    submitted = st.form_submit_button("Submit")
+with input_container.container():
+    with st.form(key=f"form_{len(st.session_state.get('messages', []))}"):
+        user_input = st.text_area(
+            "💬 Nhập câu trả lời hoặc câu hỏi...",
+            height=150,
+            max_chars=10000,
+            key=f"user_input_{len(st.session_state.get('messages', []))}"  # key phải khác nhau mỗi lần
+        )
+        submitted = st.form_submit_button("➤")
     
 #if user_input:
 if submitted and user_input.strip() != "":
+    st.session_state.messages = st.session_state.get("messages", [])
+    st.session_state.messages.append({"role": "user", "text": user_input})
+
+    # Hiển thị ngay message mới
+    st.chat_message("user").markdown(user_input)
+    
     # Xử lý
     # 1. Hiển thị câu trả lời học sinh
     st.chat_message("🧑‍🎓 Học sinh").write(user_input)
