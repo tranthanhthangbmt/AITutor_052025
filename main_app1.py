@@ -1113,21 +1113,49 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
 # submitted = st.button("➤", help="Nhấn để gửi nội dung")
 
 #Bước 2: Bọc text_area và button trong st.markdown HTML
-with st.container():
-    st.markdown('<div class="fixed-bottom-input">', unsafe_allow_html=True)
-    user_input = st.text_area(
-        "💬 Nhập câu trả lời hoặc câu hỏi...",
-        max_chars=10000,
-        key="user_input"
-    )
-    submitted = st.button("➤", help="Nhấn để gửi nội dung")
-    st.markdown('</div>', unsafe_allow_html=True)
+# with st.container():
+#     st.markdown('<div class="fixed-bottom-input">', unsafe_allow_html=True)
+#     user_input = st.text_area(
+#         "💬 Nhập câu trả lời hoặc câu hỏi...",
+#         max_chars=10000,
+#         key="user_input"
+#     )
+#     submitted = st.button("➤", help="Nhấn để gửi nội dung")
+#     st.markdown('</div>', unsafe_allow_html=True)
 
-# Chỉ khi người dùng nhấn nút gửi
-if submitted and user_input.strip() != "":
-    # Giờ đây user_input chứa nội dung đã nhập
-    with st.chat_message("user"):
-        st.markdown(user_input)
+# # Chỉ khi người dùng nhấn nút gửi
+# if submitted and user_input.strip() != "":
+#     # Giờ đây user_input chứa nội dung đã nhập
+#     with st.chat_message("user"):
+#         st.markdown(user_input)
+
+# Scroll xuống cuối khi load
+scroll_script = """
+<script>
+window.scrollTo(0, document.body.scrollHeight);
+</script>
+"""
+
+st.title("🧪 Ứng dụng demo Text Area cố định cuối")
+
+# Hiển thị các message cũ
+messages = st.session_state.get("messages", [])
+for msg in messages:
+    st.write(msg)
+
+# Text area giống như input
+user_input = st.text_area("Nhập nội dung", key="input_area", height=100)
+
+if st.button("Gửi"):
+    if user_input:
+        messages.append(f"👤 Bạn: {user_input}")
+        st.session_state.messages = messages
+        st.experimental_rerun()  # Tự động reload để giả lập chat
+        # reset input_area
+        st.session_state.input_area = ""
+
+# Scroll xuống cuối trang
+components.html(scroll_script)
 
 #if user_input:
 if submitted and user_input.strip() != "":
