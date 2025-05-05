@@ -183,6 +183,31 @@ if not input_key and key_from_local:
     st.session_state["GEMINI_API_KEY"] = key_from_local
     input_key = key_from_local
 
+# Lấy danh sách API keys từ secrets
+api_keys = st.secrets["api_keys"]["keys"]
+api_index = 0  # Index ban đầu
+
+# Hàm gọi API với cơ chế thử nhiều key
+def call_api_with_fallback(request_func):
+    global api_index
+    max_attempts = len(api_keys)
+
+    for attempt in range(max_attempts):
+        current_key = api_keys[api_index]
+        try:
+            # Gọi hàm truyền vào với API key hiện tại
+            return request_func(current_key)
+        except Exception as e:
+            st.warning(f"API key {current_key} failed with error: {e}")
+            api_index = (api_index + 1) % max_attempts  # chuyển sang key tiếp theo
+    raise RuntimeError("All API keys failed.")
+
+def get_data(api_key):
+    response = some_api_call(api_key=api_key)
+    if response.status_code != 200:
+        raise Exception(f"Bad status: {response.status_code}")
+    return response.json()
+    
 @st.cache_data
 def load_available_lessons_from_txt(url):
     try:
