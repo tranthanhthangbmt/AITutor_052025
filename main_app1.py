@@ -309,6 +309,7 @@ import random
 def get_random_key():
     return random.choice(st.secrets["gemini_keys"]["keys"])
 
+import uuid
 #Bước 1: Đặt phần nhập trong một hàm riêng
 def render_input_area():
     st.markdown("---")  # Đường kẻ phân cách
@@ -316,7 +317,7 @@ def render_input_area():
         "💬 Nhập câu trả lời hoặc câu hỏi...",
         height=150,
         max_chars=10000,
-        key="user_input"
+        key=f"user_input_{uuid.uuid4()}"
     )
     submitted = st.button("➤", help="Nhấn để gửi nội dung")
     return user_input, submitted
