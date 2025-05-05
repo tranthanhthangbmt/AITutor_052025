@@ -1131,7 +1131,11 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
 
 # Hiển thị các tin nhắn
 for msg in st.session_state.get("messages", []):
-    st.chat_message("user" if msg["role"] == "user" else "assistant").markdown(msg["text"])
+    #st.chat_message("user" if msg["role"] == "user" else "assistant").markdown(msg["text"])
+    if "text" in msg:
+        st.chat_message("user" if msg["role"] == "user" else "assistant").markdown(msg["text"])
+    else:
+        st.warning("Missing 'text' key in message. Message content skipped.")
 
 # 🟩 Luôn tạo ô input ở dưới cùng
 input_container = st.empty()
