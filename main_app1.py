@@ -1080,9 +1080,28 @@ for idx, msg in enumerate(st.session_state.messages[1:]):
     previous_msg = msg
 
 # Ô nhập câu hỏi mới
-user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
+#user_input = st.chat_input("Nhập câu trả lời hoặc câu hỏi...")
+# Multiline input thay cho chat_input
+user_input = st.text_area(
+    "💬 Nhập câu trả lời hoặc câu hỏi...",
+    height=150,
+    max_chars=10000,
+    key="user_input"
+)
 
-if user_input:
+# Nút gửi riêng
+#submitted = st.button("Gửi")
+submitted = st.button("➤", help="Nhấn để gửi nội dung")
+
+# Chỉ khi người dùng nhấn nút gửi
+if submitted and user_input.strip() != "":
+    # Giờ đây user_input chứa nội dung đã nhập
+    with st.chat_message("user"):
+        st.markdown(user_input)
+
+#if user_input:
+if submitted and user_input.strip() != "":
+    # Xử lý
     # 1. Hiển thị câu trả lời học sinh
     st.chat_message("🧑‍🎓 Học sinh").write(user_input)
     st.session_state.messages.append({"role": "user", "parts": [{"text": user_input}]})
