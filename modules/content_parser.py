@@ -39,7 +39,8 @@ def make_id(loai, stt):
         'du_an': 'DUAN',
         'khac': 'KHAC'
     }.get(loai, 'KHAC')
-    return f"{prefix}_{stt}"
+    #return f"{prefix}_{stt}"
+    return f"{stt}"
 
 
 def parse_pdf_file(file_path):
