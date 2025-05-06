@@ -30,17 +30,17 @@ def classify_section(title):
         return 'khac'
 
 
-def make_id(loai, stt):
-    prefix = {
-        'ly_thuyet': 'LYTHUYET',
-        'bai_tap_co_giai': 'BAITAPCOGIAI',
-        'trac_nghiem': 'TRACNGHIEM',
-        'luyen_tap': 'LUYENTAP',
-        'du_an': 'DUAN',
-        'khac': 'KHAC'
-    }.get(loai, 'KHAC')
-    #return f"{prefix}_{stt}"
-    return f"{stt}"
+# def make_id(loai, stt):
+#     prefix = {
+#         'ly_thuyet': 'LYTHUYET',
+#         'bai_tap_co_giai': 'BAITAPCOGIAI',
+#         'trac_nghiem': 'TRACNGHIEM',
+#         'luyen_tap': 'LUYENTAP',
+#         'du_an': 'DUAN',
+#         'khac': 'KHAC'
+#     }.get(loai, 'KHAC')
+#     #return f"{prefix}_{stt}"
+#     return f"{stt}"
 
 
 def parse_pdf_file(file_path):
@@ -109,7 +109,8 @@ def tach_noi_dung_bai_hoc_tong_quat(file_path):
             'du_an': 'DUAN',
             'khac': 'KHAC'
         }.get(loai, 'KHAC')
-        return f"{prefix}_{stt}"
+        #return f"{prefix}_{stt}"
+        return f"{stt}"
 
     def clean_text(text):
         import re
