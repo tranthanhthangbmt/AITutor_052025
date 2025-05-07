@@ -619,7 +619,8 @@ with st.sidebar:
         for idx, part in enumerate(lesson_parts):
             level = part.get("heading_level", 0)
             tieu_de = part.get("tieu_de", "Không có tiêu đề")
-            headings.append((level, f"{part['id']} – {tieu_de}"))
+            #headings.append((level, f"{part['id']} – {tieu_de}"))
+            headings.append((level, {"id": part["id"], "label": tieu_de}))
     
         # Bước 2: Gọi hàm generate_sidebar_radio_from_headings
         def custom_sidebar_radio(headings):
@@ -627,20 +628,17 @@ with st.sidebar:
             labels = ["-- Chọn mục để bắt đầu --"]
             prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
     
-            for idx, (level, text) in enumerate(headings):
+            for idx, (level, info) in enumerate(headings):
+                part_id = info["id"]
+                tieu_de = info["label"]
                 symbol = prefix_symbols[min(level, len(prefix_symbols) - 1)]
-    
-                # Tìm trạng thái học
-                part_id = text.split("–")[0].strip()
+            
                 progress_item = next(
                     (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {}
                 )
                 trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
-    
                 prefix = "✅ " if trang_thai == "hoan_thanh" else ""
-                label = f"{symbol}{prefix}{text}"
-                options.append(str(idx))
-                labels.append(label)
+                label = f"{symbol}{prefix}{part_id} – {tieu_de}"
     
             selected_raw = st.radio(
                 "Chọn mục để học:",
@@ -650,8 +648,10 @@ with st.sidebar:
             )
     
             if selected_raw != "__none__":
+                #selected_heading = headings[int(selected_raw)]
+                #part_id = selected_heading[1].split("–")[0].strip()
                 selected_heading = headings[int(selected_raw)]
-                part_id = selected_heading[1].split("–")[0].strip()
+                part_id = selected_heading[1]["id"]
                 selected_part = next((p for p in lesson_parts if p["id"] == part_id), None)
     
                 if selected_part:
