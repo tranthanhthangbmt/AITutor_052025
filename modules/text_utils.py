@@ -1,5 +1,7 @@
 import re
 from bs4 import BeautifulSoup
+import streamlit as st
+import fitz  # pip install pymupdf
 
 def clean_html_to_text(text):
     """
@@ -76,3 +78,62 @@ def convert_parentheses_to_latex(text):
     return re.sub(r"\\(([^()]+)\\)",
                   lambda m: f"\\({m.group(1).strip()}\\)" if is_math_expression(m.group(1)) else m.group(0),
                   text)
+
+#Hàm xử lý Heading từ PDF 
+def extract_headings_with_levels(pdf_path):
+    doc = fitz.open(pdf_path)
+    headings = []
+
+    for page_num in range(len(doc)):
+        page = doc[page_num]
+        blocks = page.get_text("dict")["blocks"]
+
+        for block in blocks:
+            if "lines" in block:
+                for line in block["lines"]:
+                    line_text = ""
+                    font_sizes = set()
+
+                    for span in line["spans"]:
+                        line_text += span["text"].strip()
+                        font_sizes.add(span["size"])
+
+                    if line_text:
+                        max_font = max(font_sizes)
+                        if max_font > 12:
+                            if max_font > 18:
+                                level = 0
+                            elif max_font > 15:
+                                level = 1
+                            else:
+                                level = 2
+                            headings.append((level, line_text))
+    return headings
+
+#Hiển thị st.radio() từ headings có thụt đầu dòng:
+def generate_sidebar_radio_from_headings(headings):
+    options = ["__none__"]
+    labels = ["-- Chọn mục để bắt đầu --"]
+
+    for idx, (level, text) in enumerate(headings):
+        indent = " " * level  # dùng em-space để đẹp hơn dấu cách
+        label = f"{indent}📌 {text}"
+        options.append(f"{idx}")  # chỉ số duy nhất
+        labels.append(label)
+
+    selected_raw = st.radio(
+        "Chọn mục để học:",
+        options=options,
+        format_func=lambda x: labels[options.index(x)],
+        key="selected_heading_radio"
+    )
+
+    if selected_raw != "__none__":
+        idx = int(selected_raw)
+        selected_heading = headings[idx]
+        st.session_state["selected_part_for_discussion"] = {
+            "level": selected_heading[0],
+            "tieu_de": selected_heading[1]
+        }
+        st.session_state["force_ai_to_ask"] = True
+
