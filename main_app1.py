@@ -569,30 +569,31 @@ with st.sidebar:
     #             st.session_state["force_ai_to_ask"] = True
     if show_content:
         lesson_parts = st.session_state.get("lesson_parts", [])
-        options = ["__none__"]  # option mặc định
+        options = ["__none__"]
         option_labels = ["-- Chọn mục để bắt đầu --"]
     
         for idx, part in enumerate(lesson_parts):
             part_id = part["id"]
             tieu_de = part.get("tieu_de", "Không có tiêu đề")
-            heading_level = part.get("heading_level", 0)  # thêm dòng này để lấy cấp heading
+            heading_level = part.get("heading_level", 0)
     
-            # Lấy trạng thái hoàn thành
+            # Trạng thái học
             progress_item = next(
                 (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {}
             )
             trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
     
-            # Thụt lề theo cấp độ heading (dùng em-space cho đẹp)
-            indent = " " * heading_level  # U+2003 em space
-            prefix = "✅ " if trang_thai == "hoan_thanh" else ""
+            # ✅ Thụt đầu dòng theo heading_level bằng dấu hiển thị rõ
+            indent_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
+            indent = indent_symbols[min(heading_level, len(indent_symbols) - 1)]
     
+            prefix = "✅ " if trang_thai == "hoan_thanh" else ""
             label = f"{indent}{prefix}{part_id} – {tieu_de}"
     
             options.append(f"{part_id}|{idx}")
             option_labels.append(label)
     
-        # Dùng radio như bình thường
+        # Radio selector
         selected_raw = st.radio(
             "Chọn mục để học:",
             options=options,
@@ -600,12 +601,11 @@ with st.sidebar:
             key="selected_part_radio"
         )
     
-        # Bỏ qua nếu chưa chọn
-        if selected_raw != "__none__":  
+        # Xử lý khi người dùng chọn mục
+        if selected_raw != "__none__":
             part_id, idx = selected_raw.split("|")
             new_selection = lesson_parts[int(idx)]
     
-            # So sánh tránh cập nhật dư thừa
             current = st.session_state.get("selected_part_for_discussion", {})
             if current.get("id") != part_id:
                 st.session_state["selected_part_for_discussion"] = new_selection
