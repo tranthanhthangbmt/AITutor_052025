@@ -627,7 +627,8 @@ with st.sidebar:
         def custom_sidebar_radio(headings):
             options = ["__none__"]
             labels = ["-- Chọn mục để bắt đầu --"]
-            prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
+            #prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
+            prefix_symbols = ["", "- ", "  - ", "   - ", "    - "]
         
             for idx, (level, info) in enumerate(headings):
                 part_id = info["id"]
