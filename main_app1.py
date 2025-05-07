@@ -411,7 +411,7 @@ with st.sidebar:
     }
     
     # ✅ Hiển thị selectbox
-    selected_model_name = st.selectbox("🤖 Chọn mô hình Gemini", list(model_options.keys()), index=4)
+    selected_model_name = st.selectbox("🤖 Chọn mô hình Gemini", list(model_options.keys()), index=0)
     
     # ✅ Gán URL tương ứng vào session_state (để dùng sau)
     st.session_state["GEMINI_API_URL"] = model_options[selected_model_name]
