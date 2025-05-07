@@ -115,8 +115,8 @@ def generate_sidebar_radio_from_headings(headings):
     labels = ["-- Chọn mục để bắt đầu --"]
 
     # ✅ Ký hiệu phân cấp rõ ràng và đẹp mắt
-    #prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
-    prefix_symbols = ["", "- ", "  - ", "   - ", "    - "]
+    prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
+    #prefix_symbols = ["", "- ", "  - ", "   - ", "    - "]
 
     for idx, (level, text) in enumerate(headings):  # ✅ sửa lỗi thiếu dấu phẩy
         symbol = prefix_symbols[min(level, len(prefix_symbols) - 1)]
