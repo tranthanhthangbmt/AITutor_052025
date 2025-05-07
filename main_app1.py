@@ -628,12 +628,15 @@ with st.sidebar:
             options = ["__none__"]
             labels = ["-- Chọn mục để bắt đầu --"]
             #prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
-            prefix_symbols = ["", "- ", "  - ", "   - ", "    - "]
+            #prefix_symbols = ["", "- ", "  - ", "   - ", "    - "]
+            def get_indent_prefix(level):
+                return " " * level + "↳ " if level > 0 else ""
         
             for idx, (level, info) in enumerate(headings):
                 part_id = info["id"]
                 tieu_de = info["tieu_de"]
-                symbol = prefix_symbols[min(level, len(prefix_symbols) - 1)]
+                #symbol = prefix_symbols[min(level, len(prefix_symbols) - 1)]
+                symbol = get_indent_prefix(level)
         
                 progress_item = next(
                     (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id),
