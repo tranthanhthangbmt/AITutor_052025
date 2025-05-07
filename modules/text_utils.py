@@ -115,13 +115,10 @@ def generate_sidebar_radio_from_headings(headings):
     options = ["__none__"]
     labels = ["-- Chọn mục để bắt đầu --"]
 
-    # ✅ Ký hiệu phân cấp rõ ràng và đẹp mắt
-    prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
-
-    for idx, (level text) in enumerate(headings):
-        symbol = prefix_symbols[min(level, len(prefix_symbols) - 1)]
-        label = f"{symbol}📌 {text}"
-        options.append(f"{idx}")
+    for idx, (level, text) in enumerate(headings):
+        indent = " " * level  # dùng em-space để đẹp hơn dấu cách
+        label = f"{indent}📌 {text}"
+        options.append(f"{idx}")  # chỉ số duy nhất
         labels.append(label)
 
     selected_raw = st.radio(
@@ -139,4 +136,34 @@ def generate_sidebar_radio_from_headings(headings):
             "tieu_de": selected_heading[1]
         }
         st.session_state["force_ai_to_ask"] = True
+        
+#Hiển thị st.radio() từ headings có thụt đầu dòng:
+# def generate_sidebar_radio_from_headings(headings):
+#     options = ["__none__"]
+#     labels = ["-- Chọn mục để bắt đầu --"]
+
+#     # ✅ Ký hiệu phân cấp rõ ràng và đẹp mắt
+#     prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
+
+#     for idx, (level text) in enumerate(headings):
+#         symbol = prefix_symbols[min(level, len(prefix_symbols) - 1)]
+#         label = f"{symbol}📌 {text}"
+#         options.append(f"{idx}")
+#         labels.append(label)
+
+#     selected_raw = st.radio(
+#         "Chọn mục để học:",
+#         options=options,
+#         format_func=lambda x: labels[options.index(x)],
+#         key="selected_heading_radio"
+#     )
+
+#     if selected_raw != "__none__":
+#         idx = int(selected_raw)
+#         selected_heading = headings[idx]
+#         st.session_state["selected_part_for_discussion"] = {
+#             "level": selected_heading[0],
+#             "tieu_de": selected_heading[1]
+#         }
+#         st.session_state["force_ai_to_ask"] = True
 
