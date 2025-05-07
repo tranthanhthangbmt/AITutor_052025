@@ -615,45 +615,48 @@ with st.sidebar:
         # Bước 1: Lấy danh sách headings từ lesson_parts
         lesson_parts = st.session_state.get("lesson_parts", [])
         headings = []
-    
+
         for idx, part in enumerate(lesson_parts):
             level = part.get("heading_level", 0)
-            tieu_de = part.get("tieu_de", "Không có tiêu đề")
-            #headings.append((level, f"{part['id']} – {tieu_de}"))
-            headings.append((level, {"id": part["id"], "label": tieu_de}))
+            headings.append((level, {
+                "id": part["id"],
+                "tieu_de": part.get("tieu_de", "Không có tiêu đề"),
+            }))
     
         # Bước 2: Gọi hàm generate_sidebar_radio_from_headings
         def custom_sidebar_radio(headings):
             options = ["__none__"]
             labels = ["-- Chọn mục để bắt đầu --"]
             prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
-    
+        
             for idx, (level, info) in enumerate(headings):
                 part_id = info["id"]
-                tieu_de = info["label"]
+                tieu_de = info["tieu_de"]
                 symbol = prefix_symbols[min(level, len(prefix_symbols) - 1)]
-            
+        
                 progress_item = next(
-                    (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {}
+                    (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id),
+                    {}
                 )
                 trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
                 prefix = "✅ " if trang_thai == "hoan_thanh" else ""
                 label = f"{symbol}{prefix}{part_id} – {tieu_de}"
-    
+        
+                options.append(str(idx))
+                labels.append(label)
+        
             selected_raw = st.radio(
                 "Chọn mục để học:",
                 options=options,
                 format_func=lambda x: labels[options.index(x)],
                 key="selected_part_radio"
             )
-    
+        
             if selected_raw != "__none__":
-                #selected_heading = headings[int(selected_raw)]
-                #part_id = selected_heading[1].split("–")[0].strip()
                 selected_heading = headings[int(selected_raw)]
                 part_id = selected_heading[1]["id"]
+        
                 selected_part = next((p for p in lesson_parts if p["id"] == part_id), None)
-    
                 if selected_part:
                     current = st.session_state.get("selected_part_for_discussion", {})
                     if current.get("id") != part_id:
