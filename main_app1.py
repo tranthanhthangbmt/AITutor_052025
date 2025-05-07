@@ -567,50 +567,100 @@ with st.sidebar:
     #         if current.get("id") != part_id:
     #             st.session_state["selected_part_for_discussion"] = new_selection
     #             st.session_state["force_ai_to_ask"] = True
+    # if show_content:
+    #     lesson_parts = st.session_state.get("lesson_parts", [])
+    #     options = ["__none__"]
+    #     option_labels = ["-- Chọn mục để bắt đầu --"]
+    
+    #     for idx, part in enumerate(lesson_parts):
+    #         part_id = part["id"]
+    #         tieu_de = part.get("tieu_de", "Không có tiêu đề")
+    #         heading_level = part.get("heading_level", 0)
+    
+    #         # Trạng thái học
+    #         progress_item = next(
+    #             (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {}
+    #         )
+    #         trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
+    
+    #         # ✅ Thụt đầu dòng theo heading_level bằng dấu hiển thị rõ
+    #         indent_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
+    #         indent = indent_symbols[min(heading_level, len(indent_symbols) - 1)]
+    
+    #         prefix = "✅ " if trang_thai == "hoan_thanh" else ""
+    #         label = f"{indent}{prefix}{part_id} – {tieu_de}"
+    
+    #         options.append(f"{part_id}|{idx}")
+    #         option_labels.append(label)
+    
+    #     # Radio selector
+    #     selected_raw = st.radio(
+    #         "Chọn mục để học:",
+    #         options=options,
+    #         format_func=lambda x: option_labels[options.index(x)],
+    #         key="selected_part_radio"
+    #     )
+    
+    #     # Xử lý khi người dùng chọn mục
+    #     if selected_raw != "__none__":
+    #         part_id, idx = selected_raw.split("|")
+    #         new_selection = lesson_parts[int(idx)]
+    
+    #         current = st.session_state.get("selected_part_for_discussion", {})
+    #         if current.get("id") != part_id:
+    #             st.session_state["selected_part_for_discussion"] = new_selection
+    #             st.session_state["force_ai_to_ask"] = True
+
     if show_content:
+        # Bước 1: Lấy danh sách headings từ lesson_parts
         lesson_parts = st.session_state.get("lesson_parts", [])
-        options = ["__none__"]
-        option_labels = ["-- Chọn mục để bắt đầu --"]
+        headings = []
     
         for idx, part in enumerate(lesson_parts):
-            part_id = part["id"]
+            level = part.get("heading_level", 0)
             tieu_de = part.get("tieu_de", "Không có tiêu đề")
-            heading_level = part.get("heading_level", 0)
+            headings.append((level, f"{part['id']} – {tieu_de}"))
     
-            # Trạng thái học
-            progress_item = next(
-                (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {}
+        # Bước 2: Gọi hàm generate_sidebar_radio_from_headings
+        def custom_sidebar_radio(headings):
+            options = ["__none__"]
+            labels = ["-- Chọn mục để bắt đầu --"]
+            prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
+    
+            for idx, (level, text) in enumerate(headings):
+                symbol = prefix_symbols[min(level, len(prefix_symbols) - 1)]
+    
+                # Tìm trạng thái học
+                part_id = text.split("–")[0].strip()
+                progress_item = next(
+                    (p for p in st.session_state.get("lesson_progress", []) if p["id"] == part_id), {}
+                )
+                trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
+    
+                prefix = "✅ " if trang_thai == "hoan_thanh" else ""
+                label = f"{symbol}{prefix}{text}"
+                options.append(str(idx))
+                labels.append(label)
+    
+            selected_raw = st.radio(
+                "Chọn mục để học:",
+                options=options,
+                format_func=lambda x: labels[options.index(x)],
+                key="selected_part_radio"
             )
-            trang_thai = progress_item.get("trang_thai", "chua_hoan_thanh")
     
-            # ✅ Thụt đầu dòng theo heading_level bằng dấu hiển thị rõ
-            indent_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
-            indent = indent_symbols[min(heading_level, len(indent_symbols) - 1)]
+            if selected_raw != "__none__":
+                selected_heading = headings[int(selected_raw)]
+                part_id = selected_heading[1].split("–")[0].strip()
+                selected_part = next((p for p in lesson_parts if p["id"] == part_id), None)
     
-            prefix = "✅ " if trang_thai == "hoan_thanh" else ""
-            label = f"{indent}{prefix}{part_id} – {tieu_de}"
+                if selected_part:
+                    current = st.session_state.get("selected_part_for_discussion", {})
+                    if current.get("id") != part_id:
+                        st.session_state["selected_part_for_discussion"] = selected_part
+                        st.session_state["force_ai_to_ask"] = True
     
-            options.append(f"{part_id}|{idx}")
-            option_labels.append(label)
-    
-        # Radio selector
-        selected_raw = st.radio(
-            "Chọn mục để học:",
-            options=options,
-            format_func=lambda x: option_labels[options.index(x)],
-            key="selected_part_radio"
-        )
-    
-        # Xử lý khi người dùng chọn mục
-        if selected_raw != "__none__":
-            part_id, idx = selected_raw.split("|")
-            new_selection = lesson_parts[int(idx)]
-    
-            current = st.session_state.get("selected_part_for_discussion", {})
-            if current.get("id") != part_id:
-                st.session_state["selected_part_for_discussion"] = new_selection
-                st.session_state["force_ai_to_ask"] = True
-    
+        custom_sidebar_radio(headings)
         # Kích hoạt Firebase mặc định
         st.session_state["firebase_enabled"] = True
 
