@@ -115,10 +115,13 @@ def generate_sidebar_radio_from_headings(headings):
     options = ["__none__"]
     labels = ["-- Chọn mục để bắt đầu --"]
 
-    for idx, (level, text) in enumerate(headings):
-        indent = " " * level  # dùng em-space để đẹp hơn dấu cách
-        label = f"{indent}📌 {text}"
-        options.append(f"{idx}")  # chỉ số duy nhất
+    # ✅ Ký hiệu phân cấp rõ ràng và đẹp mắt
+    prefix_symbols = ["", "➤ ", "  • ", "   → ", "    ◦ "]
+
+    for idx, (level text) in enumerate(headings):
+        symbol = prefix_symbols[min(level, len(prefix_symbols) - 1)]
+        label = f"{symbol}📌 {text}"
+        options.append(f"{idx}")
         labels.append(label)
 
     selected_raw = st.radio(
