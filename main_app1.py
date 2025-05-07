@@ -406,11 +406,12 @@ with st.sidebar:
         "⚡ Gemini 1.5 Flash": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
         "🧠 Gemini 1.5 Pro": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent",
         "🧠 Gemini 2.5 Pro Preview": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-preview-03-25:generateContent",
+        "🧪 Gemini 2.5 Pro Experimental": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro-exp-03-25:generateContent",
         "🖼️ Gemini 1.5 Pro Vision (ảnh + chữ)": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-vision:generateContent"
     }
     
     # ✅ Hiển thị selectbox
-    selected_model_name = st.selectbox("🤖 Chọn mô hình Gemini", list(model_options.keys()), index=0)
+    selected_model_name = st.selectbox("🤖 Chọn mô hình Gemini", list(model_options.keys()), index=4)
     
     # ✅ Gán URL tương ứng vào session_state (để dùng sau)
     st.session_state["GEMINI_API_URL"] = model_options[selected_model_name]
