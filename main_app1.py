@@ -398,7 +398,7 @@ with st.sidebar:
     else:
         input_key = st.session_state.GEMINI_API_KEY
     
-    input_key = st.text_input("🔑 Gemini API Key", value=input_key, type="password", key="GEMINI_API_KEY")
+    # input_key = st.text_input("🔑 Gemini API Key", value=input_key, type="password", key="GEMINI_API_KEY")
 
     # 🔄 Chọn mô hình Gemini
     model_options = {
